@@ -46,15 +46,15 @@ test = new Fiddle(data);
 test.polar();
 ```
 
-### Fiddlescheme (Fiddle JSON Schema) 
+### Fiddascheme (Fiddle JSON Schema) 
 ```json
 {
         "format":"table",
         "dimensions":     
-            {"column_name1":{ type: "number"},
-             "column_name2":{ type: "string"},
-             "column_name3":{ type: "number"},
-             "column_name4": {type: "string"}
+            {"column_name1":{ "type": "number"},
+             "column_name2":{ "type": "string"},
+             "column_name3":{ "type": "number"},
+             "column_name4":{ "type": "string"}
             },
     "dataset":[
                 {
@@ -95,5 +95,6 @@ MIT
 
 
 [Niger Little-Poole]:http://nigerlittlepoole.com
+[@thomasfuchs]:http://twitter.com/thomasfuchs
 [D3]:http://d3js.org
 
