@@ -18,7 +18,7 @@ Fiddle is built to be easily deployable and useful for creating dashboards useab
 
 ### Tech
 
-Dillinger uses just one javascript library.
+Fiddle uses just one javascript library.
 
 * [D3] - Data Driven Documents
 
@@ -28,7 +28,7 @@ Dillinger uses just one javascript library.
 ```
 
 ### Usage 
-```sh
+```javascript
 var data = {
             "dataset":[
                 {"a":1,"b":2,"c":3,"d":"test"},
@@ -46,7 +46,33 @@ test = new Fiddle(data);
 test.polar();
 ```
 
-
+### Fiddlescheme (Fiddle JSON Schema) 
+```json
+{
+        "format":"table",
+        "dimensions":     
+            {"column_name1":{ type: "number"},
+             "column_name2":{ type: "string"},
+             "column_name3":{ type: "number"},
+             "column_name4": {type: "string"}
+            },
+    "dataset":[
+                {
+                    "column_name1":1,
+                    "column_name2":"Some String",
+                    "column_name3":0,
+                    "column_name1":"Another String"
+                },
+                {
+                    "column_name1":0,
+                    "column_name2":"String for second entry",
+                    "column_name3":1,
+                    "column_name1":"Another String for second entry"
+                },
+            ]
+}
+```
+For right now there is only support for tables, in the future a graph schema will be available
 
 ### Development
 
@@ -69,6 +95,5 @@ MIT
 
 
 [Niger Little-Poole]:http://nigerlittlepoole.com
-[@thomasfuchs]:http://twitter.com/thomasfuchs
 [D3]:http://d3js.org
 
