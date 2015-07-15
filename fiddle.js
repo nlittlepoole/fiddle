@@ -14,7 +14,7 @@ Fiddle.prototype.polar = function (h, w, m){
 var dimens = this.data.dimensions;
     for (i in dimens) { 
 	if(dimens[i].type ==="string"){
-	    dimens[i]["scale"] = d3.scale.ordinal().range([h, 0]);
+	    dimens[i]["scale"] = d3.scale.ordinal().rangePoints([0, h]);
 	}
 	else{
 	    dimens[i]["scale"] = d3.scale.linear().range([h, 0]);
@@ -41,7 +41,7 @@ var cat_scale = null;
     x.domain(dimensions = d3.keys(dataset[0]).filter(function(d) {
       
 	    if(dimens[d].type === "string") {
-		y[d] = dimens[d].scale.domain(dataset.map( function(p) { return p[d]; }).sort())
+		y[d] = dimens[d].scale.domain(dataset.map( function(p) { return p[d]; }))
 		dimens["d"]["func"] = y[d];
 	    }
 	    else {
