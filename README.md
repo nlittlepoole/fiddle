@@ -61,13 +61,13 @@ test.polar();
                     "column_name1":1,
                     "column_name2":"Some String",
                     "column_name3":0,
-                    "column_name1":"Another String"
+                    "column_name4":"Another String"
                 },
                 {
                     "column_name1":0,
                     "column_name2":"String for second entry",
                     "column_name3":1,
-                    "column_name1":"Another String for second entry"
+                    "column_name4":"Another String for second entry"
                 },
             ]
 }
