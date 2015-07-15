@@ -2,6 +2,8 @@ function Fiddle( json){
     this.data = json;
     
 }
+
+
 Fiddle.prototype.polar = function (h, w, m){
 
     dataset = this.data.dataset;
@@ -9,27 +11,16 @@ Fiddle.prototype.polar = function (h, w, m){
     w = 960 - m[1] - m[3],
     h = 300 - m[0] - m[2];
 
-var dimens = {
+var dimens = this.data.dimensions;
+    for (i in dimens) { 
+	if(dimens[i].type ==="string"){
+	    dimens[i]["scale"] = d3.scale.ordinal().range([h, 0]);
+	}
+	else{
+	    dimens[i]["scale"] = d3.scale.linear().range([h, 0]);
+	}
 
-    "a":{
-    scale: d3.scale.linear().range([h, 0]),
-    type: "number"
-    },
-    "b":{
-    scale: d3.scale.linear().range([h, 0]),
-    type: "number"
-    },
-    "c":{
-    scale: d3.scale.linear().range([h, 0]),
-    type: "number"
-    },
-    "d": {
-    scale: d3.scale.ordinal().rangePoints([0, h]),
-    type: "string"
     }
-
-};
-
 var x = d3.scale.ordinal().rangePoints([0, w], 1),
     y = {},
     dragging = {};
