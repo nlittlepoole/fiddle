@@ -1,11 +1,69 @@
 function Fiddle( json){
     this.data = json;
-    
+    this.master = json;
+    this.figures = {}
+}
+
+Fiddle.prototype.reset = function (){
+    this.data = this.master;
 }
 
 
-Fiddle.prototype.polar = function (h, w, m){
+Fiddle.prototype.clearFig = function(tag){
+    d3.select(tag).html("");
+    delete this.figures[tag];
+    }
 
+Fiddle.prototype.clear = function (){
+    this.data = this.master;
+    for(tag in this.figures){
+	d3.select(tag).html("");
+    }
+    this.figures = {}
+}
+
+Fiddle.prototype.addFilter = function (func){
+    this.data["filters"] = "filters" in this.data && this.data["filters"].length > 0 ?  this.data["filters"].push(func)  : [func];
+}
+Fiddle.prototype.addMap = function ( func){
+    this.data["maps"] = "maps" in this.data && this.data["maps"].length > 0 ?  this.data["maps"].push(func)  : [func];
+}
+
+Fiddle.prototype.filter = function(){
+    var results = [];
+    var dataset = this.data.dataset;
+    var filters = this.data["filters"];
+    for (i = 0; i < dataset.length; i++) {
+	var check = true;
+	for(j = 0; j< filters.length; j++){ 
+		var check = check && filters[j](dataset[i]);
+	}
+	if(check == true){
+	    results.push(dataset[i]);
+	}
+    }
+    this.data.dataset = results;
+}
+Fiddle.prototype.map = function(ordering){
+    var results = [];
+    var dataset = this.data.dataset;
+    var maps = this.data["maps"];
+    var indexes = !ordering ? Array.apply(null, Array(maps.length)).map(function (_, i) {return i;}) : ordering;
+    for (i = 0; i < dataset.length; i++) {
+	for(j = 0; j< indexes.length; j++){ 
+		dataset[i] = maps[indexes[j]](dataset[i]);
+	}
+
+    }
+    this.data.dataset = dataset;
+}
+
+    Fiddle.prototype.update = function(tag){
+	func = this.figures[tag]
+	func();
+    }
+
+Fiddle.prototype.parallel = function (tag, h, w, m){
     dataset = this.data.dataset;
     var m = [30, 10, 10, 10],
     w = 960 - m[1] - m[3],
@@ -29,8 +87,13 @@ var line = d3.svg.line(),
     axis = d3.svg.axis().orient("left"),
     background,
     foreground;
+    tag = tag===null ? "body" : tag;
 
-var svg = d3.select("body").append("svg:svg")
+    // clear out existing svg for this figure
+    var existing = d3.select(tag);
+    existing.selectAll("svg").remove()
+
+    var svg = d3.select(tag).append("svg:svg")
     .attr("width", w + m[1] + m[3])
     .attr("height", h + m[0] + m[2])
     .append("svg:g")
@@ -71,8 +134,7 @@ foreground = svg.append("svg:g")
 
 // Add a group element for each dimension.
 var g = svg.selectAll(".dimension")
-    .data(dimensions)
-    .enter().append("svg:g")
+    .data(dimensions).enter().append("svg:g")
     .attr("class", "dimension")
     .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
     .call(d3.behavior.drag()
@@ -98,9 +160,9 @@ var g = svg.selectAll(".dimension")
 		  .transition()
 		  .delay(500)
 		  .duration(0)
-		  .attr("visibility", null);
-	      }));
-
+	      .attr("visibility", null)
+	  }));
+	
 // Add an axis and title.
 g.append("svg:g")
     .attr("class", "axis")
@@ -117,7 +179,8 @@ g.append("svg:g")
     .selectAll("rect")
     .attr("x", -8)
     .attr("width", 16);
-
+    this.figures[tag] = Fiddle.prototype.parallel.bind(this,tag,h,w,m);
+    return svg;
 
 function position(d) {
     var v = dragging[d];
@@ -151,8 +214,6 @@ function brush() {
 	});
 }
 }
-
-
 Fiddle.prototype.bar = function() {
     dataset = this.data.dataset;
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
