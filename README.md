@@ -22,13 +22,17 @@ Fiddle uses just one javascript library.
 
 * [D3] - Data Driven Documents
 
-### Installation
+### Build Instructions 
 ```
-<script src="fiddle/fiddle.js"></script>
+./build.sh
+cp compiled.js ../fiddle.js
 ```
+^then use the fiddle.js in the above directory in your script
 
 ### Usage 
 ```javascript
+<script src="fiddle.js"></script>
+
 var data = {
             "dataset":[
                 {"a":1,"b":2,"c":3,"d":"test"},
