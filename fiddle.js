@@ -163,7 +163,6 @@ foreground = svg.append("svg:g")
             .style({'stroke' : '#F00'});
             return true;
         })
-    .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
     .on("mouseout", function(d){
             d3.select(this).transition().duration(100)
             .style({'stroke': 'steelblue' })
