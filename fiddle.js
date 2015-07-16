@@ -47,6 +47,8 @@ Fiddle.prototype.filter = function(){
 Fiddle.prototype.map = function(ordering){
     var results = [];
     var dataset = this.data.dataset;
+
+
     var maps = this.data["maps"];
     var indexes = !ordering ? Array.apply(null, Array(maps.length)).map(function (_, i) {return i;}) : ordering;
     for (i = 0; i < dataset.length; i++) {
@@ -64,7 +66,27 @@ Fiddle.prototype.map = function(ordering){
     }
 
 Fiddle.prototype.parallel = function (tag, h, w, m){
-    dataset = this.data.dataset;
+    var unmerged = this.data.dataset;
+    var merged = {};
+    var dataset = [];
+    for (i = 0; i < unmerged.length; i++) {
+	var key = "";
+	for(k in unmerged[i]){
+	    key = key + String(k) + String(unmerged[i][k]);
+	}
+	if(key in merged){
+	    merged[key].magnitude+=1;
+	}
+	else{
+	    var temp = unmerged[i];
+	    temp["magnitude"] = 1;
+	    merged[key] = temp;
+	}
+
+    }
+    for (key in merged) {
+	dataset.push(merged[key]);
+    }
     var m = [30, 10, 10, 10],
     w = 960 - m[1] - m[3],
     h = 300 - m[0] - m[2];
@@ -102,7 +124,10 @@ var line = d3.svg.line(),
 var cat_scale = null;
 // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(dataset[0]).filter(function(d) {
-      
+	    
+		if(d ==="magnitude"){
+		    return false;
+		}
 	    if(dimens[d].type === "string") {
 		y[d] = dimens[d].scale.domain(dataset.map( function(p) { return p[d]; }))
 		dimens["d"]["func"] = y[d];
@@ -125,13 +150,26 @@ background = svg.append("svg:g")
     .attr("d", path);
 
 // Add blue foreground lines for focus.
+
 foreground = svg.append("svg:g")
     .attr("class", "foreground")
     .selectAll("path")
     .data(dataset)
     .enter().append("svg:path")
-    .attr("d", path);
-
+    .attr("d", path)
+    .attr("title", function(d){ return d.magnitude})
+    .on("mouseover", function(d){
+            d3.select(this).transition().duration(100)
+            .style({'stroke' : '#F00'});
+            return true;
+        })
+    .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+    .on("mouseout", function(d){
+            d3.select(this).transition().duration(100)
+            .style({'stroke': 'steelblue' })
+            .style({'stroke-width' : '2'});
+            return true;
+        });
 // Add a group element for each dimension.
 var g = svg.selectAll(".dimension")
     .data(dimensions).enter().append("svg:g")
@@ -193,8 +231,9 @@ function transition(g) {
 
 // Returns the path for a given data point.
 function path(d) {
-    return line(dimensions.map(function(p) {
-		return [position(p), y[p](d[p])]; }));
+    var t = dimensions.map(function(p) {
+	    return [position(p), y[p](d[p]) + 10*Math.random()]; });
+    return line(t);
 }
 
 // Handles a brush event, toggling the display of foreground lines.
