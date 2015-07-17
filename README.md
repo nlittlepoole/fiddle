@@ -36,12 +36,12 @@ cp compiled.js ../fiddle.js
 var data = {
             "dataset":[
                 {"a":1,"b":2,"c":3,"d":"test"},
-                {"a":2,"b":0,"c":1,"d":"test"},
+                {"a":2,"b":1448801888,"c":1,"d":"test"},
                 {"a":1,"b":3,"c":2,"d":"firefly"},
                 {"a":3,"b":0,"c":5,"d":"okay"} ],
             "dimensions":     
                 {"a":{ type: "number"},
-                 "b":{ type: "number"},
+                 "b":{ type: "time"},
                  "c":{ type: "number"},
                  "d": {type: "string"}
             }
@@ -58,20 +58,20 @@ test.polar();
             {"column_name1":{ "type": "number"},
              "column_name2":{ "type": "string"},
              "column_name3":{ "type": "number"},
-             "column_name4":{ "type": "string"}
+             "column_name4":{ "type": "time"}
             },
     "dataset":[
                 {
                     "column_name1":1,
                     "column_name2":"Some String",
                     "column_name3":0,
-                    "column_name4":"Another String"
+                    "column_name4":"Epoch Timestamp"
                 },
                 {
                     "column_name1":0,
                     "column_name2":"String for second entry",
                     "column_name3":1,
-                    "column_name4":"Another String for second entry"
+                    "column_name4":"Another Epoch Timestamp"
                 },
             ]
 }
