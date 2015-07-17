@@ -164,7 +164,7 @@ function transition(g) {
 // Returns the path for a given data point.
 function path(d) {
     var t = dimensions.map(function(p) {
-	    return [position(p), y[p](d[p]) + 10*Math.random()]; });
+	    return [position(p), y[p](d[p])  });
     return line(t);
 }
 
