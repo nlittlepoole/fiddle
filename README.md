@@ -28,7 +28,7 @@ Fiddle uses just one javascript library.
 cp compiled.js ../fiddle.js
 ```
 ^then use the fiddle.js in the above directory in your script
-You can also use the official [releases] version. Note Fiddle is still pre-alpha.
+You can also use the official [release] version. Note Fiddle is still pre-alpha.
 
 ### Usage 
 ```javascript
