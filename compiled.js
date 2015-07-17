@@ -193,7 +193,7 @@ foreground = svg.append("svg:g")
     .on("mouseout", function(d){
             d3.select(this).transition().duration(100)
             .style({'stroke': 'steelblue' })
-            .style({'stroke-width' : '2'});
+            .style({'stroke-width' : '3'});
             return true;
         });
 // Add a group element for each dimension.
@@ -258,7 +258,7 @@ function transition(g) {
 // Returns the path for a given data point.
 function path(d) {
     var t = dimensions.map(function(p) {
-	    return [position(p), y[p](d[p]) + 10*Math.random()]; });
+	    return [position(p), y[p](d[p]) ] });
     return line(t);
 }
 
