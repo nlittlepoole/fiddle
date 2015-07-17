@@ -34,3 +34,18 @@ svg {
   text-shadow: 0 1px 0 #fff;
   cursor: move;
 }
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.bar text {
+  fill: #fff;
+}
