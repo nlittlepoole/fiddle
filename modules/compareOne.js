@@ -1,4 +1,20 @@
-Fiddle.prototype.histogram = function(dimension, tag) {
+Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
+    var existing = d3.select(tag);
+    existing.selectAll("svg").remove();
+    
+    margin = margin == null ? {top: 20, right: 20, bottom: 50, left: 40} : margin;
+
+    width = width == null ? 960 : width;
+    width = width - margin.left - margin.right;
+    height = height == null ? 450 : height;
+    height = height - margin.top - margin.bottom;
+    
+    var svg =  d3.select(tag).append("svg")
+	.attr("width", width + margin.left + margin.right)
+	.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
     if (this.data.dimensions[dimension].space==="discrete"){
     var dataset = [];
@@ -12,10 +28,6 @@ Fiddle.prototype.histogram = function(dimension, tag) {
     for(v in raw){
 	dataset.push(raw[v]);
     }
-    var margin = {top: 20, right: 20, bottom: 50, left: 40},
-
-    width = 960 - margin.left - margin.right,
-    height = 450 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1);
@@ -30,13 +42,6 @@ Fiddle.prototype.histogram = function(dimension, tag) {
     var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
-
-    
-    var svg = d3.select(tag).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
 
 	x.domain(dataset.map(function(d) { return d.name; }));
@@ -74,7 +79,7 @@ Fiddle.prototype.histogram = function(dimension, tag) {
             .attr("height", function(d) { return height - y(d.frequency); });
       bar.append("text")
 	    .attr("dy", ".75em")
-    .attr("y",  function(d) { return y(d.frequency) ; })
+            .attr("y",  function(d) { return y(d.frequency) ; })
             .attr("x", function(d){return x(d.name) + x.rangeBand()/2;})
 	    .attr("text-anchor", "middle")
 	    .text(function(d) { return d.frequency; });
@@ -88,10 +93,6 @@ Fiddle.prototype.histogram = function(dimension, tag) {
 
 	// A formatter for counts.
 	var formatCount = d3.format(",.0f");
-
-	var margin = {top: 10, right: 30, bottom: 30, left: 30},
-	width = 960 - margin.left - margin.right,
-	height = 500 - margin.top - margin.bottom;
 
 	var x = d3.scale.linear()
 	.domain([Math.min.apply(Math, values), Math.max.apply(Math, values)])
@@ -113,12 +114,6 @@ Fiddle.prototype.histogram = function(dimension, tag) {
 	var yAxis = d3.svg.axis()
 	.scale(y)
 	.orient("left");
-
-	var svg = d3.select("body").append("svg")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
-	.append("g")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	var bar = svg.selectAll(".bar")
 	.data(data)
@@ -154,4 +149,6 @@ Fiddle.prototype.histogram = function(dimension, tag) {
 	    .text("Count");
 
     }
+    this.figures[tag] = Fiddle.prototype.histogram.bind(this,dimension,tag,height ,width ,margin);
+    return svg;
 };

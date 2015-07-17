@@ -46,7 +46,7 @@ var line = d3.svg.line(),
 
     // clear out existing svg for this figure
     var existing = d3.select(tag);
-    existing.selectAll("svg").remove()
+    existing.selectAll("svg").remove();
 
     var svg = d3.select(tag).append("svg:svg")
     .attr("width", w + m[1] + m[3])
@@ -150,6 +150,7 @@ g.append("svg:g")
     .attr("x", -8)
     .attr("width", 16);
     this.figures[tag] = Fiddle.prototype.parallel.bind(this,tag,h,w,m);
+
     return svg;
 
 function position(d) {
