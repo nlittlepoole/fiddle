@@ -15,7 +15,6 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	.append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
     if (this.data.dimensions[dimension].space==="discrete"){
     var dataset = [];
     var raw = {};
@@ -102,6 +101,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	var data = d3.layout.histogram()
 	.bins(x.ticks(20))
 	(values);
+	console.log(data);
 
 	var y = d3.scale.linear()
 	.domain([0, d3.max(data, function(d) { return d.y; })])
