@@ -247,7 +247,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     return svg;
 };Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width, margin){
 
-    margin = margin == null ? {top: 50, right: 50, bottom: 100, left: 100} : margin;
+    margin = margin == null ? {top: 50, right: 120, bottom: 100, left: 100} : margin;
 
     width = width == null ? 960 : width;
     width = width - margin.left - margin.right;
@@ -278,6 +278,24 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    if(this.data.dimensions[z_dim].space ==="continuous"){
+
+        var values = [];
+        for (i =0; i < this.data.dataset.length; i++){
+            values.push(this.data.dataset[i][z_dim]);
+        }
+        var max = Math.max.apply(Math, values);
+        var min = Math.min.apply(Math, values);
+        var step = (max - min) / 10;
+        z_map = function(s){
+            var mult = Math.round(s/step);
+            return parseFloat((mult*step).toPrecision(2));
+        };
+    }
+    else{
+        z_map = function(s){return s;};
+    }
 
 
             x.domain(d3.extent(dataset, function(d) {  return d[x_dim]; })).nice();
@@ -312,25 +330,26 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 		.attr("r", 3.5)
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
-                .style("fill", function(d) { return color(d[z_dim]); });
+                .style("fill", function(d) { return color(z_map(d[z_dim])); });
+            var colors = this.data.dimensions[z_dim] === "continuous" ? color.domain().sort(function(a,b) { return a - b;}) :color.domain.sort();
 	    var legend = svg.selectAll(".legend")
-    .data(color.domain().sort())
+                .data(colors)
 		.enter().append("g")
 		.attr("class", "legend")
 		.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
 	    legend.append("rect")
-		.attr("x", width - 18)
+		.attr("x", width)
 		.attr("width", 18)
 		.attr("height", 18)
 		.style("fill", color);
 
 	    legend.append("text")
-		.attr("x", width - 24)
+		.attr("x", width + 24)
 		.attr("y", 9)
 		.attr("dy", ".35em")
-		.style("text-anchor", "end")
-		.text(function(d) { return d; });
+		.style("text-anchor", "start")
+                .html(function(d) { return "&le; " +  d; });
 
 
 
