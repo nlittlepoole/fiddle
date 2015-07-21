@@ -63,12 +63,12 @@ var cat_scale = null;
 		}
 	    if(dimens[d].type === "string") {
 		y[d] = dimens[d].scale.domain(dataset.map( function(p) { return p[d]; }))
-		dimens["d"]["func"] = y[d];
+		dimens[d]["func"] = y[d];
 	    }
 	    else {
 		
 		y[d] = dimens[d].scale.domain(d3.extent(dataset, function(p) { return +p[d]; }))
-		dimens["d"]["func"] = y[d];
+		dimens[d]["func"] = y[d];
 	    }
 
 	    return true;
