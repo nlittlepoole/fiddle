@@ -40,7 +40,7 @@ Fiddle.prototype.setPeriod = function(dimension,period){
 Fiddle.prototype.clearFig = function(tag){
     d3.select(tag).html("");
     delete this.figures[tag];
-    }
+};
 
 Fiddle.prototype.clear = function (){
     this.data = this.master;
@@ -48,14 +48,14 @@ Fiddle.prototype.clear = function (){
 	d3.select(tag).html("");
     }
     this.figures = {}
-}
+};
 
 Fiddle.prototype.addFilter = function (func){
     this.data["filters"] = "filters" in this.data && this.data["filters"].length > 0 ?  this.data["filters"].push(func)  : [func];
-}
+};
 Fiddle.prototype.addMap = function ( func){
     this.data["maps"] = "maps" in this.data && this.data["maps"].length > 0 ?  this.data["maps"].push(func)  : [func];
-}
+};
 
 Fiddle.prototype.filter = function(){
     var results = [];
@@ -71,7 +71,7 @@ Fiddle.prototype.filter = function(){
 	}
     }
     this.data.dataset = results;
-}
+};
 Fiddle.prototype.map = function(ordering){
     var results = [];
     var dataset = this.data.dataset;
@@ -86,9 +86,38 @@ Fiddle.prototype.map = function(ordering){
 
     }
     this.data.dataset = dataset;
-}
+};
 
 Fiddle.prototype.update = function(tag){
 	func = this.figures[tag]
 	func();
-}
+};
+Fiddle.prototype.overview = this.parallel;
+Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
+    if(dimens.length ===1){
+	return this.histogram(dimens[0],tag, height,width,margin);
+    }
+    else if(dimens.length ===2){
+	var x = dimens[0];
+	var y = dimens[1];
+	
+	var x_s = x.space==="continous" ? 1 : 0;
+	var y_s = y.space==="continous" ? 1 : 0;
+
+	var space = x_s + y_s;
+
+	if(space===0 || space===1)
+	    return this.heatmap(x,y,tag,height,width,margin);
+	else if(space===2){
+	    return this.scatterplot(x,y,tag,height,width,margin);
+	}
+    }
+    else if(dimens.length ===3){
+        var x = dimens[0];
+	var y = dimens[1];
+	var z = dimens[2];
+	
+	return this.scatterplot3D(x,y,z,tag,height,width,margin);
+    }
+
+};
