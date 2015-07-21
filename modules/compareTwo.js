@@ -2,7 +2,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     var existing = d3.select(tag);
     existing.selectAll("svg").remove();
 
-    margin = margin == null ? {top: 20, right: 20, bottom: 50, left: 100} : margin;
+    margin = margin == null ? {top: 50, right: 50, bottom: 100, left: 100} : margin;
 
     width = width == null ? 960 : width;
     width = width - margin.left - margin.right;
@@ -175,5 +175,78 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
                    .style({"fill":"#aaa"});
 
     this.figures[tag] = Fiddle.prototype.heatmap.bind(this,x,y,tag,height ,width ,margin);
+    return svg;
+};
+
+Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin){
+
+    margin = margin == null ? {top: 50, right: 50, bottom: 100, left: 100} : margin;
+
+    width = width == null ? 960 : width;
+    width = width - margin.left - margin.right;
+    height = height == null ? 450 : height;
+    height = height - margin.top - margin.bottom;
+
+
+    var dataset  = this.data.dataset;
+    var x = d3.scale.linear()
+    .range([0, width]);
+
+    var y = d3.scale.linear()
+    .range([height, 0]);
+
+    var color = d3.scale.category10();
+
+    var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+    var svg = d3.select(tag).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+            x.domain(d3.extent(dataset, function(d) {  return d[x_dim]; })).nice();
+	    y.domain(d3.extent(dataset, function(d) {  return d[y_dim]; })).nice();
+
+	    svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis)
+		.append("text")
+		.attr("class", "label")
+		.attr("x", width)
+		.attr("y", -6)
+		.style("text-anchor", "end")
+		.text(x_dim);
+
+	    svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+		.append("text")
+		.attr("class", "label")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text(y_dim)
+
+		svg.selectAll(".dot")
+		.data(dataset)
+		.enter().append("circle")
+		.attr("class", "dot")
+		.attr("r", 4.5)
+		.attr("cx", function(d) { return x(d[x_dim]); })
+		.attr("cy", function(d) { return y(d[y_dim]); })
+    .style("fill", function(d) { return color(1); });
+
+    this.figures[tag] = Fiddle.prototype.scatterplot.bind(this,x,y,tag,height ,width ,margin);
     return svg;
 };

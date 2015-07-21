@@ -42,7 +42,7 @@ svg {
   fill: brown;
 }
 
-.x.axis path {
+.x.axis-hist path {
   display: none;
 }
 
@@ -68,3 +68,14 @@ svg {
       text.axis-worktime {
         fill: #000;
       }
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
