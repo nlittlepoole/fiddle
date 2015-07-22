@@ -17,7 +17,7 @@ Fiddle is built to be easily deployable and useful for creating dashboards useab
 Play around with a [demo] app I made called [Twiddle] built on top of Fiddle.js
 
 ### Version
-0.0.3
+0.2.0
 
 ### Tech
 
@@ -92,9 +92,9 @@ Feel free to make a pull request to this repository. This project is being built
 ### Todo's
 
   - Write Tests
-  - More chart types
-  - Pick any combination of dimensions to get dynamic visualizations providing easy insights
-  - Build learning and 
+  - Update visuals
+  - Provide field statistics
+  - Build learning and grouping
 
 ### Maintainers:
 [Niger Little-Poole]
