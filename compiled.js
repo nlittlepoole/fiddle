@@ -92,6 +92,7 @@ Fiddle.prototype.update = function(tag){
 	func = this.figures[tag]
 	func();
 };
+Fiddle.prototype.overview = this.parallel;
 Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     if(dimens.length ===1){
 	return this.histogram(dimens[0],tag, height,width,margin);
@@ -411,7 +412,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var step = (max - min) / 10;
 	x_map = function(s){
 	    var mult = Math.round(s/step);
-	    return mult*step;
+	    return parseFloat((mult*step).toPrecision(2));
 	};
     }
     else{
@@ -428,7 +429,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var step = (max - min) / 10;
 	y_map = function(s){
 	    var mult = Math.round(s/step);
-	    return mult*step;
+	    return parseFloat((mult*step).toPrecision(2));
 	};
     }
     else{
@@ -459,7 +460,10 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     console.log(dataset);
     var horizontal = hor.unique();
     var vertical = ver.unique();
-    horizontal.sort(); vertical.sort();
+    
+    horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
+    vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
+    console.log(vertical);
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;

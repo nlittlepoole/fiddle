@@ -29,7 +29,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	var step = (max - min) / 10;
 	x_map = function(s){
 	    var mult = Math.round(s/step);
-	    return mult*step;
+	    return parseFloat((mult*step).toPrecision(2));
 	};
     }
     else{
@@ -46,7 +46,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	var step = (max - min) / 10;
 	y_map = function(s){
 	    var mult = Math.round(s/step);
-	    return mult*step;
+	    return parseFloat((mult*step).toPrecision(2));
 	};
     }
     else{
@@ -57,9 +57,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	hor.push(x_map(unmerged[i][x]));
 	ver.push(y_map(unmerged[i][y]));
 	var key = String(x_map(unmerged[i][x])) + String(y_map(unmerged[i][y]));
-	console.log(key);
        	if(key in merged){
-	    console.log("dup");
 	    merged[key]["magnitude"]+=1;
 	}
 	else{         
@@ -77,13 +75,13 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     console.log(dataset);
     var horizontal = hor.unique();
     var vertical = ver.unique();
-    horizontal.sort(); vertical.sort();
+    
+    horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
+    vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;
 
-    console.log(horizontal);
-    console.log(vertical);
 
     height = gridSize*(vertical.length + 1) - margin.top - margin.bottom;
     width = gridSize*(horizontal.length + 1);
