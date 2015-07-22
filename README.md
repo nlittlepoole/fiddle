@@ -14,7 +14,7 @@ Fiddle.js is a javascript data sandbox so that you can fiddle with your data and
 Fiddle is built to be easily deployable and useful for creating dashboards useable by non technical and non data scientist indivduals. Anyone should be able to leverage the power of the data in front of them.
 
 ### Version
-0.0.1
+0.0.3
 
 ### Tech
 
@@ -28,6 +28,7 @@ Fiddle uses just one javascript library.
 cp compiled.js ../fiddle.js
 ```
 ^then use the fiddle.js in the above directory in your script
+You can also use the official [release] version. Note Fiddle is still pre-alpha.
 
 ### Usage 
 ```javascript
@@ -40,10 +41,10 @@ var data = {
                 {"a":1,"b":3,"c":2,"d":"firefly"},
                 {"a":3,"b":0,"c":5,"d":"okay"} ],
             "dimensions":     
-                {"a":{ type: "number"},
-                 "b":{ type: "time"},
-                 "c":{ type: "number"},
-                 "d": {type: "string"}
+                {"a":{ type: "number", space:"continuous"},
+                 "b":{ type: "time", space: "discrete"},
+                 "c":{ type: "number", space:"discrete"},
+                 "d": {type: "string", space: "discrete"}
             }
 };
 test = new Fiddle(data);
@@ -55,10 +56,10 @@ test.polar();
 {
         "format":"table",
         "dimensions":     
-            {"column_name1":{ "type": "number"},
-             "column_name2":{ "type": "string"},
-             "column_name3":{ "type": "number"},
-             "column_name4":{ "type": "time"}
+            {"column_name1":{ "type": "number", "space": "continuous"},
+             "column_name2":{ "type": "string", "space": "discrete" },
+             "column_name3":{ "type": "number", "space": "discrete"},
+             "column_name4":{ "type": "time", "space": "discrete"}
             },
     "dataset":[
                 {
@@ -101,4 +102,4 @@ MIT
 [Niger Little-Poole]:http://nigerlittlepoole.com
 [@thomasfuchs]:http://twitter.com/thomasfuchs
 [D3]:http://d3js.org
-
+[release]: https://github.com/nlittlepoole/fiddle/releases
