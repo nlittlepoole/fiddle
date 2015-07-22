@@ -440,9 +440,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	hor.push(x_map(unmerged[i][x]));
 	ver.push(y_map(unmerged[i][y]));
 	var key = String(x_map(unmerged[i][x])) + String(y_map(unmerged[i][y]));
-	console.log(key);
        	if(key in merged){
-	    console.log("dup");
 	    merged[key]["magnitude"]+=1;
 	}
 	else{         
@@ -463,13 +461,10 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     
     horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
     vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
-    console.log(vertical);
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;
 
-    console.log(horizontal);
-    console.log(vertical);
 
     height = gridSize*(vertical.length + 1) - margin.top - margin.bottom;
     width = gridSize*(horizontal.length + 1);
