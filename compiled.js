@@ -101,8 +101,8 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var x = dimens[0];
 	var y = dimens[1];
 	
-	var x_s = x.space==="continous" ? 1 : 0;
-	var y_s = y.space==="continous" ? 1 : 0;
+	var x_s = x.space==="continuous" ? 1 : 0;
+	var y_s = y.space==="continuous" ? 1 : 0;
 
 	var space = x_s + y_s;
 
