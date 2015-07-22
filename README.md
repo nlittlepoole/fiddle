@@ -1,6 +1,6 @@
 # Fiddle.js
 
-Fiddle.js is a javascript data sandbox so that you can fiddle with your data and find the best insights maintained by me [Niger Little-Poole]
+Fiddle.js is a javascript data sandbox so that you can fiddle with your data and find the best insights
 
   - Uses a standardized json format so that anything can be plugged into fiddle
   - View overview parallel coordinate view to have an idea of where to start
@@ -95,6 +95,9 @@ Feel free to make a pull request to this repository. This project is being built
   - More chart types
   - Pick any combination of dimensions to get dynamic visualizations providing easy insights
   - Build learning and 
+
+### Maintainers:
+[Niger Little-Poole]
 
 License
 ----
