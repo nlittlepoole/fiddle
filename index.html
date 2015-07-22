@@ -1,0 +1,129 @@
+<html>
+<head>
+
+<title>Fiddle Tester</title>
+ <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/nlittlepoole/fiddle/master/style/fiddle.css">
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+<script src="https://rawgit.com/nlittlepoole/fiddle/master/compiled.js"></script>
+
+</head>
+
+<body>
+<div class = "container">
+    <div class="row">
+        <div class="col-xs-3"> 
+	  <h1><a href="">Twiddle </a><h1>
+<h2>Explore</h2>
+<p>Sample: Newsletter Metrics</p>
+x:<select class="params" id="x">
+</select>
+<br>
+y:<select class="params" id="y">
+</select>
+<br>
+z:<select class="params" id="z">
+</select>
+<br>
+<form action="javascript:shuffle()" id="sub">
+  <input type="submit">
+</form>	
+
+</div>
+        <div class="col-xs-9">
+	  <div class= "parallel">
+	  </div>
+	</div>
+    </div>
+</div>
+<script>
+
+var data = {"dataset":[],
+"dimensions":     {"Photos":{
+    type: "number",
+    space:"discrete",
+    },
+    "Time":{
+    type: "time",
+    space:"discrete",
+    },
+    "Words":{
+    type: "number",
+    space:"continuous",
+    },
+    "Comics": {
+    type: "number",
+    space: "discrete",
+    },
+    "Click Rate": {
+    type: "number",
+    space: "continuous",
+    }
+}
+};
+for(i = 0; i<100; i++){
+    rand = {}
+    score = {}
+    rand["Photos"] = Math.round(Math.random() * 5);
+    rand["Comics"] = Math.round(2 * Math.random());
+    rand["Words"] = Math.random() > 0.7 ? 1000 * Math.random() : 1000 * Math.random();
+    rand["Time"] = 1374364800 + i*604800 +  3600*(9 + Math.round(Math.random()*15));
+    var x = rand["Photos"]/5;
+    score["a"] = -1*Math.pow(x,2) + 2*x;
+    x = rand["Words"]/1000 + 0.9
+    score["c"] = x>=1 ? Math.pow(x,-2): 1;
+    var time = new Date(0); time.setUTCSeconds(rand["Time"]);
+    score["d"] = time.getHours() < 12 ? 0.95 : 0.35;
+
+    rand["Click Rate"] = score.a /3+  score.c/3 +  score.d/3 + Math.random()/10;
+    data.dataset.push(rand);
+}
+console.log(data.dataset);
+fid = new Fiddle(data);
+fid.setPeriod("Time","hour");
+fid.parallel(".parallel");
+
+var dimen_list = d3.keys(data.dimensions);
+dimen_list.unshift("");
+var select = d3.selectAll("select")
+             .selectAll('option')
+             .data(dimen_list)
+             .enter().append("option")
+             .html(function(d){console.log(d); return d;})
+             .attr("value", function (d) { return d; });
+function shuffle(){
+     var ids = ["x","y","z"];
+     var dims = [];
+     for(i = 0; i < ids.length; i++){
+          if(document.getElementById(ids[i]).value.length < 1){break}; 
+          dims.push(document.getElementById(ids[i]).value);
+     }
+     fid.clearFig(".parallel");
+ 
+     fid.explore(dims,".parallel");
+     return false;
+}
+
+//fid.histogram("c",".parallel");
+/*
+function test(value) {
+  value.c = value.c *2;
+  return value;
+}
+
+fid.addMap(test);
+fid.map();
+fid.setPeriod("b","month");
+fid.update(".parallel");
+*/
+
+    $("path").tooltip({
+        'container': 'body',
+        'placement': 'center'
+    });
+
+</script>
+</body>
+</html>
