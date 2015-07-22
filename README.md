@@ -13,6 +13,9 @@ Fiddle.js is a javascript data sandbox so that you can fiddle with your data and
 
 Fiddle is built to be easily deployable and useful for creating dashboards useable by non technical and non data scientist indivduals. Anyone should be able to leverage the power of the data in front of them.
 
+### Demo:
+Play around with a [demo] app I made called [Twiddle] built on top of Fiddle.js
+
 ### Version
 0.0.3
 
@@ -103,3 +106,5 @@ MIT
 [@thomasfuchs]:http://twitter.com/thomasfuchs
 [D3]:http://d3js.org
 [release]: https://github.com/nlittlepoole/fiddle/releases
+[demo]: http://nlittlepoole.github.io/fiddle/
+[Twiddle]: http://nlittlepoole.github.io/fiddle/
