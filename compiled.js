@@ -362,6 +362,16 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 		.style("text-anchor", "end")
 		.text(y_dim)
 
+            /* Add label to legend */
+            svg.append("text")
+               .attr("dy", ".71em")
+               .attr("font-size", "20px")
+               .attr("x", width - 25)
+               .attr("y", -25)
+               .style("text-anchor", "start")
+    .style("text-decoration", "underline")
+               .text(z_dim);
+
 		svg.selectAll(".dot")
 		.data(dataset)
 		.enter().append("circle")
