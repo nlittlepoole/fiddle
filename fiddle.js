@@ -119,7 +119,16 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var y = dimens[1];
 	var z = dimens[2];
 	
-	return this.scatterplot3D(x,y,z,tag,height,width,margin);
+	var x_s = this.data.dimensions[x].space==="continuous" ? 1 : 0;
+        var y_s = this.data.dimensions[y].space==="continuous" ? 1 : 0;
+	var z_s = this.data.dimensions[z].space==="continuous" ? 1 : 0;
+
+	if((x_s===1 && y_s===1) || z_s ===0 ){
+	    return this.scatterplot3D(x,y,z,tag,height,width,margin);
+	}
+	else {
+	    return this.heatmap3D(x,y,z,tag,height,width,margin);
+	}
     }
 
 };
