@@ -55,10 +55,15 @@ Fiddle.prototype.clear = function (){
 Fiddle.prototype.addFilter = function (key,func){
     this.data["filters"][key] = func;
 };
+Fiddle.prototype.removeFilter = function(key){
+    delete this.data["filters"][key];
+}
 Fiddle.prototype.addMap = function (key, func){
     this.data["maps"][key] = key;
 };
-
+Fiddle.prototype.removeMap = function(key){
+    delete this.data["maps"][key];
+}
 Fiddle.prototype.filter = function(){
     var results = [];
     var dataset = this.data.dataset;
