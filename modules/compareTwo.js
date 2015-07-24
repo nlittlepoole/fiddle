@@ -128,6 +128,26 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 		   .attr("transform", "translate(" + gridSize / 2 + ", -6)")
 		   .attr("class", function(d, i) { return  "horizontal mono axis"; });
 
+               /* Add label to horizontal axis */
+               svg.append("text")
+              .attr("dy", ".71em")
+              .attr("font-size", "20px")
+              .attr("x", 0)
+              .attr("y", -45)
+              .style("text-anchor", "start")
+              .text(x);
+
+              /* Add label to vertical axis */
+               svg.append("text")
+              .attr("dy", ".71em")
+              .attr("font-size", "20px")
+              .attr("x", 20)
+              .attr("y", -100)
+              .attr("transform", "rotate(-90)")
+              .style("text-anchor", "end")
+              .text(y);
+
+               
 	       var heatMap = svg.selectAll(".hour")
 		   .data(dataset)
 		   .enter().append("rect")
@@ -163,7 +183,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 		   .attr("y", height + gridSize)
 		   .attr("width", legendElementWidth)
 		   .attr("height", gridSize / 2)
-		   .style("fill", function(d, i) { return colors[i]; });
+                   .style("fill", function(d, i) { return colors[i]; });
 
 	       legend.append("text")
 		   .attr("class", "mono")

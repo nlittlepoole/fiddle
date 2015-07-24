@@ -101,11 +101,10 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var x = dimens[0];
 	var y = dimens[1];
 	
-	var x_s = x.space==="continuous" ? 1 : 0;
-	var y_s = y.space==="continuous" ? 1 : 0;
+	var x_s = this.data.dimensions[x].space==="continuous" ? 1 : 0;
+	var y_s = this.data.dimensions[y].space==="continuous" ? 1 : 0;
 
 	var space = x_s + y_s;
-
 	if(space===0 || space===1)
 	    return this.heatmap(x,y,tag,height,width,margin);
 	else if(space===2){

@@ -101,11 +101,11 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var x = dimens[0];
 	var y = dimens[1];
 	
-	var x_s = x.space==="continuous" ? 1 : 0;
-	var y_s = y.space==="continuous" ? 1 : 0;
+	var x_s = this.data.dimensions[x].space==="continuous" ? 1 : 0;
+	var y_s = this.data.dimensions[y].space==="continuous" ? 1 : 0;
 
 	var space = x_s + y_s;
-
+	console.log(x_s + " " + y_s + " " + space);
 	if(space===0 || space===1)
 	    return this.heatmap(x,y,tag,height,width,margin);
 	else if(space===2){
@@ -511,6 +511,26 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 		   .attr("transform", "translate(" + gridSize / 2 + ", -6)")
 		   .attr("class", function(d, i) { return  "horizontal mono axis"; });
 
+               /* Add label to horizontal axis */
+               svg.append("text")
+              .attr("dy", ".71em")
+              .attr("font-size", "20px")
+              .attr("x", 0)
+              .attr("y", -45)
+              .style("text-anchor", "start")
+              .text(x);
+
+              /* Add label to vertical axis */
+               svg.append("text")
+              .attr("dy", ".71em")
+              .attr("font-size", "20px")
+              .attr("x", 20)
+              .attr("y", -100)
+              .attr("transform", "rotate(-90)")
+              .style("text-anchor", "end")
+              .text(y);
+
+               
 	       var heatMap = svg.selectAll(".hour")
 		   .data(dataset)
 		   .enter().append("rect")
@@ -543,16 +563,16 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 
 	       legend.append("rect")
 		   .attr("x", function(d, i) { return legendElementWidth * i; })
-		   .attr("y", height)
+		   .attr("y", height + gridSize)
 		   .attr("width", legendElementWidth)
 		   .attr("height", gridSize / 2)
-		   .style("fill", function(d, i) { return colors[i]; });
+                   .style("fill", function(d, i) { return colors[i]; });
 
 	       legend.append("text")
 		   .attr("class", "mono")
                    .html(function(d) { return "&ge; " + Math.round(d); })
 		   .attr("x", function(d, i) { return legendElementWidth * i; })
-		   .attr("y", height + gridSize/4)
+		   .attr("y", height + gridSize*1.25)
                    .style({"fill":"#aaa"});
 
     this.figures[tag] = Fiddle.prototype.heatmap.bind(this,x,y,tag,height ,width ,margin);
