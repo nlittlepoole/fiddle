@@ -1,6 +1,4 @@
 function Fiddle( json){
-    json["filters"] = {};
-    json["maps"] = {};
     this.data = json;
     this.master = json;
     this.figures = {}
@@ -51,46 +49,21 @@ Fiddle.prototype.clear = function (){
     }
     this.figures = {}
 };
-
-Fiddle.prototype.addFilter = function (key,func){
-    this.data["filters"][key] = func;
-};
-Fiddle.prototype.removeFilter = function(key){
-    delete this.data["filters"][key];
-}
-Fiddle.prototype.addMap = function (key, func){
-    this.data["maps"][key] = key;
-};
-Fiddle.prototype.removeMap = function(key){
-    delete this.data["maps"][key];
-}
-Fiddle.prototype.filter = function(){
+Fiddle.prototype.filter = function(filt){
     var results = [];
     var dataset = this.data.dataset;
-    var filters = this.data["filters"];
     for (i = 0; i < dataset.length; i++) {
-	var check = true;
-	for(j = 0; j< filters.length; j++){ 
-		var check = check && filters[j](dataset[i]);
-	}
+	var check = filt(dataset[i]);
 	if(check == true){
 	    results.push(dataset[i]);
 	}
     }
     this.data.dataset = results;
 };
-Fiddle.prototype.map = function(ordering){
-    var results = [];
+Fiddle.prototype.map = function(mapper){
     var dataset = this.data.dataset;
-
-
-    var maps = this.data["maps"];
-    var indexes = !ordering ? Array.apply(null, Array(maps.length)).map(function (_, i) {return i;}) : ordering;
     for (i = 0; i < dataset.length; i++) {
-	for(j = 0; j< indexes.length; j++){ 
-		dataset[i] = maps[indexes[j]](dataset[i]);
-	}
-
+	  dataset[i] = mapper(dataset[i]);
     }
     this.data.dataset = dataset;
 };
