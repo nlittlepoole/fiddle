@@ -8,9 +8,34 @@ Fiddle.prototype.reset = function (){
     this.data = this.master;
 }
 
-Fiddle.prototype.setPeriod = function(dimension,period){
-	
+Fiddle.prototype.setPeriodContinuous = function(dimension,period){
     var dataset = this.data.dataset;
+    this.data.dimensions[dimension].space = "continuous"
+    for (i = 0; i < dataset.length; i++) {
+        var utcSeconds = dataset[i][dimension];
+	var time = new Date(0); // The 0 there is the key, which sets the date to the epoch
+	time.setUTCSeconds(utcSeconds);
+	if(period.toLowerCase() ==="second")
+	    dataset[i][dimension] = time.getSeconds();
+	else if(period.toLowerCase() ==="minute")
+	    dataset[i][dimension] = time.getMinutes() + time.getSeconds()/60.0;
+	else if(period.toLowerCase() ==="hour")
+	    dataset[i][dimension] = time.getHours() + time.getMinutes()/60.0 + time.getSeconds()/60.0/10.0;
+	else if(period.toLowerCase() ==="day")
+	    dataset[i][dimension] = time.getDay() +  time.getHours()/24.0 + time.getMinutes()/60.0/10.0 + time.getSeconds()/60.0/100.0;
+	else if(period.toLowerCase() ==="days")
+	    dataset[i][dimension] = time.getDate() + time.getHours()/24.0 + time.getMinutes()/60.0/10.0 + time.getSeconds()/60.0/100.0;
+	else if(period.toLowerCase() ==="week")
+	    dataset[i][dimension] = ((time.getDate()/7) + 1) + time.getDay()/7.0 +  time.getHours()/24.0/10.0 + time.getMinutes()/60.0/100.0;
+	else if(period.toLowerCase() ==="month")
+	    dataset[i][dimension] = time.getMonth() + ((time.getDate()/7) + 1)/4.0 + time.getDay()/7.0/10.0 +  time.getHours()/24.0/100.0;
+	else if(period.toLowerCase() ==="year")
+	    dataset[i][dimension] = time.getFullYear() + time.getMonth()/12.0 + ((time.getDate()/7) + 1)/4.0/10.0 + time.getDay()/7.0/100.0;
+    }
+}
+Fiddle.prototype.setPeriodDiscrete = function(dimension,period){
+    var dataset = this.data.dataset;
+    this.data.dimensions[dimension].space = "discrete"
     for (i = 0; i < dataset.length; i++) {
         var utcSeconds = dataset[i][dimension];
 	var time = new Date(0); // The 0 there is the key, which sets the date to the epoch
@@ -32,8 +57,6 @@ Fiddle.prototype.setPeriod = function(dimension,period){
 	else if(period.toLowerCase() ==="year")
 	    dataset[i][dimension] = time.getFullYear();
     }
-
-
 }
 
 
