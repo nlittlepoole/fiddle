@@ -1,4 +1,6 @@
 function Fiddle( json){
+    json["filters"] = {};
+    json["maps"] = {};
     this.data = json;
     this.master = json;
     this.figures = {}
@@ -50,11 +52,11 @@ Fiddle.prototype.clear = function (){
     this.figures = {}
 };
 
-Fiddle.prototype.addFilter = function (func){
-    this.data["filters"] = "filters" in this.data && this.data["filters"].length > 0 ?  this.data["filters"].push(func)  : [func];
+Fiddle.prototype.addFilter = function (key,func){
+    this.data["filters"][key] = func;
 };
-Fiddle.prototype.addMap = function ( func){
-    this.data["maps"] = "maps" in this.data && this.data["maps"].length > 0 ?  this.data["maps"].push(func)  : [func];
+Fiddle.prototype.addMap = function (key, func){
+    this.data["maps"][key] = key;
 };
 
 Fiddle.prototype.filter = function(){
