@@ -160,7 +160,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 
 	       legend.append("rect")
 		   .attr("x", function(d, i) { return legendElementWidth * i; })
-		   .attr("y", height)
+		   .attr("y", height + gridSize)
 		   .attr("width", legendElementWidth)
 		   .attr("height", gridSize / 2)
 		   .style("fill", function(d, i) { return colors[i]; });
@@ -169,7 +169,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 		   .attr("class", "mono")
                    .html(function(d) { return "&ge; " + Math.round(d); })
 		   .attr("x", function(d, i) { return legendElementWidth * i; })
-		   .attr("y", height + gridSize/4)
+		   .attr("y", height + gridSize*1.25)
                    .style({"fill":"#aaa"});
 
     this.figures[tag] = Fiddle.prototype.heatmap.bind(this,x,y,tag,height ,width ,margin);
