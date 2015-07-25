@@ -32,7 +32,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     .rangeRoundBands([0, width], .1);
 
     var y = d3.scale.linear()
-    .range([height, 0]);
+    .range([height, 15]);
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -58,15 +58,6 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	    .style("text-anchor", "middle")
 	    .text(dimension);
 
-	svg.append("g")
-	    .attr("class", "y axis")
-	    .call(yAxis)
-	    .append("text")
-	    .attr("transform", "rotate(-90)")
-	    .attr("y", 6)
-	    .attr("dy", ".71em")
-	    .style("text-anchor", "end")
-	    .text("Count");
 
 	var bar = svg.selectAll(".bar")
     .data(dataset).enter().append("g").attr("class", "bar");
@@ -78,6 +69,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
             .attr("height", function(d) { return height - y(d.frequency); });
       bar.append("text")
 	    .attr("dy", ".75em")
+	    .style("font-size", 13)
             .attr("y",  function(d) { return y(d.frequency) ; })
             .attr("x", function(d){return x(d.name) + x.rangeBand()/2;})
 	    .attr("text-anchor", "middle")
@@ -107,7 +99,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	.range([height, 0]);
 
 	var xAxis = d3.svg.axis()
-	.scale(x)
+	.scale(x).ticks(20)
 	.orient("bottom");
 
 	var yAxis = d3.svg.axis()
@@ -131,20 +123,18 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	.attr("text-anchor", "middle")
 	.text(function(d) { return formatCount(d.y); });
 
-	svg.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0," + height + ")")
-	.call(xAxis);
 
 	svg.append("g")
-	    .attr("class", "y axis")
-	    .call(yAxis)
+	    .attr("class", "x axis")
+	    .attr("transform", "translate(0," + height + ")")
+	    .call(xAxis)
 	    .append("text")
-	    .attr("transform", "rotate(-90)")
-	    .attr("y", 6)
 	    .attr("dy", ".71em")
-	    .style("text-anchor", "end")
-	    .text("Count");
+            .attr("font-size", "20px")
+            .attr("x", width/2)
+    .attr("y", 25) 
+	    .style("text-anchor", "middle")
+	    .text(dimension);
 
     }
     this.figures[tag] = Fiddle.prototype.histogram.bind(this,dimension,tag,height ,width ,margin);
