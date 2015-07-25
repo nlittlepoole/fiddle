@@ -149,8 +149,9 @@ g.append("svg:g")
     .selectAll("rect")
     .attr("x", -8)
     .attr("width", 16);
-    this.figures[tag] = Fiddle.prototype.parallel.bind(this,tag,h,w,m);
+ 
 
+    this.figures[tag] = Fiddle.prototype.parallel.bind(this,tag,h,w,m);
     return svg;
 
 function position(d) {

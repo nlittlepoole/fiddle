@@ -227,14 +227,13 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var formatCount = d3.format(",.0f");
 
 	var x = d3.scale.linear()
-	.domain([Math.min.apply(Math, values), Math.max.apply(Math, values)])
+	.domain(d3.extent(values) /* [Math.min.apply(Math, values), Math.max.apply(Math, values) ]*/)
 	.range([0, width]);
 
 	// Generate a histogram using twenty uniformly-spaced bins.
 	var data = d3.layout.histogram()
 	.bins(x.ticks(20))
 	(values);
-	console.log(data);
 
 	var y = d3.scale.linear()
 	.domain([0, d3.max(data, function(d) { return d.y; })])
@@ -253,16 +252,15 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	.enter().append("g")
 	.attr("class", "bar")
 	.attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
 	bar.append("rect")
 	.attr("x", 1)
-	.attr("width", x(data[0].dx) - 1)
+	.attr("width", x(data[0].x -1 ) > 44 ? x(data[0].x -1 ) : 44)
 	.attr("height", function(d) { return height - y(d.y); });
 
 	bar.append("text")
 	.attr("dy", ".75em")
 	.attr("y", 6)
-	.attr("x", x(data[0].dx) / 2)
+	.attr("x", x(data[0].dx -1) / 2 > 22 ? x(data[0].x -1 )/2 : 22)
 	.attr("text-anchor", "middle")
 	.text(function(d) { return formatCount(d.y); });
 
@@ -1053,8 +1051,9 @@ g.append("svg:g")
     .selectAll("rect")
     .attr("x", -8)
     .attr("width", 16);
-    this.figures[tag] = Fiddle.prototype.parallel.bind(this,tag,h,w,m);
+ 
 
+    this.figures[tag] = Fiddle.prototype.parallel.bind(this,tag,h,w,m);
     return svg;
 
 function position(d) {
