@@ -22,7 +22,7 @@ Fiddle.prototype.parallel = function (tag, h, w, m){
     }
     var m = [30, 10, 10, 10],
     w = 960 - m[1] - m[3],
-    h = 300 - m[0] - m[2];
+    h = 450 - m[0] - m[2];
 
 var dimens = this.data.dimensions;
     for (i in dimens) { 
@@ -135,7 +135,7 @@ var g = svg.selectAll(".dimension")
 	
 // Add an axis and title.
 g.append("svg:g")
-    .attr("class", "axis")
+    .attr("class", "axis_parallel")
     .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
     .append("svg:text")
     .attr("text-anchor", "middle")

@@ -141,7 +141,12 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     width = width - margin.left - margin.right;
     height = height == null ? 450 : height;
     height = height - margin.top - margin.bottom;
-    
+
+    var color = d3.scale.category20b();
+    for( i=0; i < 10;i++){
+	color(i);
+    }
+    var col = dimension.length % 10;
     var svg =  d3.select(tag).append("svg")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
@@ -165,7 +170,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     .rangeRoundBands([0, width], .1);
 
     var y = d3.scale.linear()
-    .range([height, 0]);
+    .range([height, 15]);
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -191,26 +196,21 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	    .style("text-anchor", "middle")
 	    .text(dimension);
 
-	svg.append("g")
-	    .attr("class", "y axis")
-	    .call(yAxis)
-	    .append("text")
-	    .attr("transform", "rotate(-90)")
-	    .attr("y", 6)
-	    .attr("dy", ".71em")
-	    .style("text-anchor", "end")
-	    .text("Count");
 
 	var bar = svg.selectAll(".bar")
     .data(dataset).enter().append("g").attr("class", "bar");
     
        bar.append("rect")
+	   .style("fill", color(col))
 	    .attr("x", function(d) { return x(d.name); })
 	    .attr("width", x.rangeBand())
 	    .attr("y", function(d) { return y(d.frequency); })
             .attr("height", function(d) { return height - y(d.frequency); });
-      bar.append("text")
+      
+
+       bar.append("text")
 	    .attr("dy", ".75em")
+	    .style("font-size", 13)
             .attr("y",  function(d) { return y(d.frequency) ; })
             .attr("x", function(d){return x(d.name) + x.rangeBand()/2;})
 	    .attr("text-anchor", "middle")
@@ -226,6 +226,12 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	// A formatter for counts.
 	var formatCount = d3.format(",.0f");
 
+	var color = d3.scale.category20b();
+	for( i=0; i < 10;i++){
+	    color(i);
+	}
+	var col = dimension.length % 10;
+
 	var x = d3.scale.linear()
 	.domain(d3.extent(values) /* [Math.min.apply(Math, values), Math.max.apply(Math, values) ]*/)
 	.range([0, width]);
@@ -240,7 +246,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	.range([height, 0]);
 
 	var xAxis = d3.svg.axis()
-	.scale(x)
+	.scale(x).ticks(20)
 	.orient("bottom");
 
 	var yAxis = d3.svg.axis()
@@ -250,8 +256,10 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var bar = svg.selectAll(".bar")
 	.data(data)
 	.enter().append("g")
+	.style("fill",color(col))
 	.attr("class", "bar")
 	.attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+       
 	bar.append("rect")
 	.attr("x", 1)
 	.attr("width", x(data[0].x -1 ) > 44 ? x(data[0].x -1 ) : 44)
@@ -264,20 +272,18 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	.attr("text-anchor", "middle")
 	.text(function(d) { return formatCount(d.y); });
 
-	svg.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0," + height + ")")
-	.call(xAxis);
 
 	svg.append("g")
-	    .attr("class", "y axis")
-	    .call(yAxis)
+	    .attr("class", "x axis")
+	    .attr("transform", "translate(0," + height + ")")
+	    .call(xAxis)
 	    .append("text")
-	    .attr("transform", "rotate(-90)")
-	    .attr("y", 6)
 	    .attr("dy", ".71em")
-	    .style("text-anchor", "end")
-	    .text("Count");
+            .attr("font-size", "20px")
+            .attr("x", width/2)
+    .attr("y", 25) 
+	    .style("text-anchor", "middle")
+	    .text(dimension);
 
     }
     this.figures[tag] = Fiddle.prototype.histogram.bind(this,dimension,tag,height ,width ,margin);
@@ -299,7 +305,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     var y = d3.scale.linear()
     .range([height, 0]);
 
-    var color = d3.scale.category10();
+    var color = d3.scale.category20();
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -374,7 +380,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 		.data(dataset)
 		.enter().append("circle")
 		.attr("class", "dot")
-		.attr("r", 3.5)
+		.attr("r", 6)
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
                 .style("fill", function(d) { return color(z_map(d[z_dim])); });
@@ -430,10 +436,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
-        var step = (max - min) / 10;
+        var x_step = (max - min) / 10;
         x_map = function(s){
-            var mult = Math.round(s/step);
-            return parseFloat((mult*step).toPrecision(2));
+            var mult = Math.round(s/x_step);
+	    console.log(s + "," + x_step  + "," + mult + "," + parseFloat((mult*step).toPrecision(2)));
+            return parseFloat((mult*x_step).toPrecision(2));
         };
     }
     else{
@@ -473,6 +480,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     else{
         return null;
     }
+
     for( i = 0; i< unmerged.length; i++){
         hor.push(x_map(unmerged[i][x]));
         ver.push(y_map(unmerged[i][y]));
@@ -497,6 +505,8 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     console.log(dataset);
     var horizontal = hor.unique();
     var vertical = ver.unique();
+    console.log(horizontal);
+
 
     horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();
     vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();
@@ -507,7 +517,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 
     height = gridSize*(vertical.length + 1) - margin.top - margin.bottom;
     width = horizontal.length>9 ? gridSize*(horizontal.length + 1) : gridSize*10;
-    var colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
+    var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
     var label = function(val, dim){
         if(this.data.dimensions[dim].type==="number"){
             if(this.data.dimensions[dim].space ==="discrete"){
@@ -702,8 +712,10 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 
 
     height = gridSize*(vertical.length + 1) - margin.top - margin.bottom;
-    width = gridSize*(horizontal.length + 1);
-    var colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
+    width = horizontal.length > 10 ? gridSize*(horizontal.length + 1) : gridSize * 10;
+    var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
+
+
     var label = function(val, dim){
 	if(this.data.dimensions[dim].type==="number"){
 	    if(this.data.dimensions[dim].space ==="discrete"){
@@ -831,7 +843,7 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
     var y = d3.scale.linear()
     .range([height, 0]);
 
-    var color = d3.scale.category10();
+    var color = d3.scale.category20b();
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -878,7 +890,7 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
 		.data(dataset)
 		.enter().append("circle")
 		.attr("class", "dot")
-		.attr("r", 4.5)
+		.attr("r", 6.5)
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
     .style("fill", function(d) { return color(1); });
@@ -924,7 +936,7 @@ Array.prototype.unique = function() {
     }
     var m = [30, 10, 10, 10],
     w = 960 - m[1] - m[3],
-    h = 300 - m[0] - m[2];
+    h = 450 - m[0] - m[2];
 
 var dimens = this.data.dimensions;
     for (i in dimens) { 
@@ -1037,7 +1049,7 @@ var g = svg.selectAll(".dimension")
 	
 // Add an axis and title.
 g.append("svg:g")
-    .attr("class", "axis")
+    .attr("class", "axis_parallel")
     .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
     .append("svg:text")
     .attr("text-anchor", "middle")

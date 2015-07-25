@@ -26,10 +26,10 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	}
 	var max = Math.max.apply(Math, values);
 	var min = Math.min.apply(Math, values);
-	var step = (max - min) / 10;
+	var x_step = (max - min) / 10;
 	x_map = function(s){
-	    var mult = Math.round(s/step);
-	    return parseFloat((mult*step).toPrecision(2));
+	    var mult = Math.round(s/x_step);
+	    return parseFloat((mult*x_step).toPrecision(2));
 	};
     }
     else{
@@ -43,10 +43,10 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	}
 	var max = Math.max.apply(Math, values);
 	var min = Math.min.apply(Math, values);
-	var step = (max - min) / 10;
+	var y_step = (max - min) / 10;
 	y_map = function(s){
-	    var mult = Math.round(s/step);
-	    return parseFloat((mult*step).toPrecision(2));
+	    var mult = Math.round(s/y_step);
+	    return parseFloat((mult*y_step).toPrecision(2));
 	};
     }
     else{
@@ -84,8 +84,10 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 
 
     height = gridSize*(vertical.length + 1) - margin.top - margin.bottom;
-    width = gridSize*(horizontal.length + 1);
-    var colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
+    width = horizontal.length > 10 ? gridSize*(horizontal.length + 1) : gridSize * 10;
+    var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
+
+
     var label = function(val, dim){
 	if(this.data.dimensions[dim].type==="number"){
 	    if(this.data.dimensions[dim].space ==="discrete"){
@@ -213,7 +215,7 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
     var y = d3.scale.linear()
     .range([height, 0]);
 
-    var color = d3.scale.category10();
+    var color = d3.scale.category20b();
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -260,7 +262,7 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
 		.data(dataset)
 		.enter().append("circle")
 		.attr("class", "dot")
-		.attr("r", 4.5)
+		.attr("r", 6.5)
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
     .style("fill", function(d) { return color(1); });

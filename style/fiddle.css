@@ -6,7 +6,7 @@ svg {
   fill: none;
   stroke: #ccc;
   stroke-opacity: .4;
-  sroke-width:3;
+  sroke-width:2;
   shape-rendering: crispEdges;
 }
 
@@ -14,28 +14,26 @@ svg {
   fill: none;
   stroke: steelblue;
   stroke-opacity: .4;
-  stroke-width: 3;
+  stroke-width: 2;
 }
 
 .brush .extent {
   fill-opacity: .3;
-  stroke: #fff;
+  stroke: #000;
   shape-rendering: crispEdges;
 }
 
 .axis line,
 .axis path {
   fill: none;
-  stroke: #000;
+  stroke: #fff;
   shape-rendering: crispEdges;
 }
 
 .axis text {
-  text-shadow: 0 1px 0 #fff;
+  fill: #BDC3C7;
+  text-shadow: 0 1px 0 #eee;
   cursor: move;
-}
-.bar {
-  fill: steelblue;
 }
 
 .bar:hover {
@@ -58,19 +56,27 @@ svg {
       text.mono {
         font-size: 9pt;
         font-family: Consolas, courier;
-        fill: #000;
+        fill: #BDC3C7;
       }
 
       text.axis-workweek {
-        fill: #000;
+        fill: #BDC3C7;
       }
 
       text.axis-worktime {
-        fill: #000;
+        fill: #BDC3C7;
       }
 
 .axis path,
 .axis line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis_parallel line,
+.axis_parallel path
+{
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
@@ -78,4 +84,5 @@ svg {
 
 .dot {
   stroke: #000;
+  opacity: .9;
 }

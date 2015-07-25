@@ -15,7 +15,7 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
     var y = d3.scale.linear()
     .range([height, 0]);
 
-    var color = d3.scale.category10();
+    var color = d3.scale.category20();
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -40,10 +40,10 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
-        var step = (max - min) / 10;
+        var z_step = (max - min) / 10;
         z_map = function(s){
-            var mult = Math.round(s/step);
-            return parseFloat((mult*step).toPrecision(2));
+            var mult = Math.round(s/z_step);
+            return parseFloat((mult*z_step).toPrecision(2));
         };
     }
     else{
@@ -90,7 +90,7 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
 		.data(dataset)
 		.enter().append("circle")
 		.attr("class", "dot")
-		.attr("r", 3.5)
+		.attr("r", 6)
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
                 .style("fill", function(d) { return color(z_map(d[z_dim])); });
@@ -146,10 +146,10 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
-        var step = (max - min) / 10;
+        var x_step = (max - min) / 10;
         x_map = function(s){
-            var mult = Math.round(s/step);
-            return parseFloat((mult*step).toPrecision(2));
+            var mult = Math.round(s/x_step);
+            return parseFloat((mult*x_step).toPrecision(2));
         };
     }
     else{
@@ -163,10 +163,10 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
-        var step = (max - min) / 10;
+        var y_step = (max - min) / 10;
         y_map = function(s){
-            var mult = Math.round(s/step);
-            return parseFloat((mult*step).toPrecision(2));
+            var mult = Math.round(s/y_step);
+            return parseFloat((mult*y_step).toPrecision(2));
         };
     }
     else{
@@ -180,15 +180,16 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
-        var step = (max - min) / 10;
+        var z_step = (max - min) / 10;
         z_map = function(s){
-            var mult = Math.round(s/step);
-            return parseFloat((mult*step).toPrecision(2));
+            var mult = Math.round(s/z_step);
+            return parseFloat((mult*z_step).toPrecision(2));
         };
     }
     else{
         return null;
     }
+
     for( i = 0; i< unmerged.length; i++){
         hor.push(x_map(unmerged[i][x]));
         ver.push(y_map(unmerged[i][y]));
@@ -213,6 +214,8 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     console.log(dataset);
     var horizontal = hor.unique();
     var vertical = ver.unique();
+    console.log(horizontal);
+
 
     horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();
     vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();
@@ -223,7 +226,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 
     height = gridSize*(vertical.length + 1) - margin.top - margin.bottom;
     width = horizontal.length>9 ? gridSize*(horizontal.length + 1) : gridSize*10;
-    var colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; // alternatively colorbrewer.YlGnBu[9]
+    var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
     var label = function(val, dim){
         if(this.data.dimensions[dim].type==="number"){
             if(this.data.dimensions[dim].space ==="discrete"){
