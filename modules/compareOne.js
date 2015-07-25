@@ -6,7 +6,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 
     width = width == null ? 960 : width;
     width = width - margin.left - margin.right;
-    height = height == null ? 450 : height;
+    height = height == null ? 550 : height;
     height = height - margin.top - margin.bottom;
 
     var color = d3.scale.category20b();
@@ -37,7 +37,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     .rangeRoundBands([0, width], .1);
 
     var y = d3.scale.linear()
-    .range([height, 15]);
+    .range([height, 25]);
 
     var xAxis = d3.svg.axis()
     .scale(x)
@@ -77,7 +77,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 
        bar.append("text")
 	    .attr("dy", ".75em")
-	    .style("font-size", 13)
+	    .style("font-size", 20)
             .attr("y",  function(d) { return y(d.frequency) ; })
             .attr("x", function(d){return x(d.name) + x.rangeBand()/2;})
 	    .attr("text-anchor", "middle")
@@ -110,7 +110,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 
 	var y = d3.scale.linear()
 	.domain([0, d3.max(data, function(d) { return d.y; })])
-	.range([height, 0]);
+	.range([height, 25]);
 
 	var xAxis = d3.svg.axis()
 	.scale(x).ticks(20)
@@ -133,6 +133,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	.attr("height", function(d) { return height - y(d.y); });
 
 	bar.append("text")
+	.style("font-size" , 20)
 	.attr("dy", ".75em")
 	.attr("y", 6)
 	.attr("x", x(data[0].dx -1) / 2 > 22 ? x(data[0].x -1 )/2 : 22)
