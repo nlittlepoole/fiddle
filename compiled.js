@@ -915,7 +915,9 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
 
     this.figures[tag] = Fiddle.prototype.scatterplot.bind(this,x,y,tag,height ,width ,margin);
     return svg;
-};Array.prototype.contains = function(v) {
+};
+
+Array.prototype.contains = function(v) {
     for(var i = 0; i < this.length; i++) {
         if(this[i] === v) return true;
     }
@@ -1060,7 +1062,6 @@ Array.prototype.unique = function() {
 		    clone.setAttribute("height", height * options.scale);
 		    clone.setAttribute("viewBox", "0 0 " + width + " " + height);
 		    outer.appendChild(clone);
-
 		    var css = styles(el, options.selectorRemap);
 		    var s = document.createElement('style');
 		    s.setAttribute('type', 'text/css');
@@ -1069,7 +1070,9 @@ Array.prototype.unique = function() {
 		    defs.appendChild(s);
 		    clone.insertBefore(defs, clone.firstChild);
 
+		    
 		    var svg = doctype + outer.innerHTML;
+		    console.log(svg);
 		    var uri = 'data:image/svg+xml;base64,' + window.btoa(unescape(encodeURIComponent(svg)));
 		    if (cb) {
 			cb(uri);

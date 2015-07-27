@@ -17,6 +17,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     var svg =  d3.select(tag).append("svg")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
+        .attr("id",tag.replace(".",""))
 	.append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 

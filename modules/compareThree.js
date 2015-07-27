@@ -28,6 +28,7 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
     var svg = d3.select(tag).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("id",tag.replace(".",""))
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -246,6 +247,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     var svg = d3.select(tag).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("id",tag.replace(".",""))
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
