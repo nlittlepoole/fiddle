@@ -13,7 +13,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     for( i=0; i < 10;i++){
 	color(i);
     }
-    var col = dimension.length % 10;
+    var col = dimension.length % 20;
     var svg =  d3.select(tag).append("svg")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
@@ -97,7 +97,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	for( i=0; i < 10;i++){
 	    color(i);
 	}
-	var col = dimension.length % 10;
+	var col = dimension.length % 20;
 
 	var x = d3.scale.linear()
 	.domain(d3.extent(values) /* [Math.min.apply(Math, values), Math.max.apply(Math, values) ]*/)

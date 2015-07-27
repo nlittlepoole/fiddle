@@ -1,3 +1,13 @@
+.trend_line {
+  fill: none;
+  stroke-width: 1.5px;
+}
+.trend_text{
+  fill: #BDC3C7;
+  text-shadow: 0 1px 0 #eee;
+  cursor: move;
+}
+
 svg {
   font: 10px sans-serif;
 }
@@ -12,7 +22,6 @@ svg {
 
 .foreground path {
   fill: none;
-  stroke: steelblue;
   stroke-opacity: .4;
   stroke-width: 2;
 }

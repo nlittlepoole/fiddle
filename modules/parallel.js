@@ -23,6 +23,16 @@ Fiddle.prototype.parallel = function (tag, h, w, m){
     var m = [30, 10, 10, 10],
     w = 960 - m[1] - m[3],
     h = 450 - m[0] - m[2];
+    var color = d3.scale.category20b();
+    for( i=0; i < 10;i++){
+        color(i);
+    }
+    var c = '';
+    for( i = 0; i< this.data.dimensions.length; i++){
+        c = c + this.data.dimensions[i];
+    }
+    var col = c.length % 20;
+
 
 var dimens = this.data.dimensions;
     for (i in dimens) { 
@@ -90,15 +100,16 @@ foreground = svg.append("svg:g")
     .data(dataset)
     .enter().append("svg:path")
     .attr("d", path)
+    .style("stroke", color(col))
     .attr("title", function(d){ return d.magnitude})
     .on("mouseover", function(d){
             d3.select(this).transition().duration(100)
-            .style({'stroke' : '#F00'});
+            .style("stroke","#F00" );
             return true;
         })
     .on("mouseout", function(d){
             d3.select(this).transition().duration(100)
-            .style({'stroke': 'steelblue' })
+            .style("stroke", color(col))
             .style({'stroke-width' : '3'});
             return true;
         });
