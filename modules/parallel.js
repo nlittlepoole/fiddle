@@ -61,6 +61,7 @@ var line = d3.svg.line(),
     var svg = d3.select(tag).append("svg:svg")
     .attr("width", w + m[1] + m[3])
     .attr("height", h + m[0] + m[2])
+    .attr("id",tag.replace(".",""))
     .append("svg:g")
     .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
