@@ -108,6 +108,10 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var y_s = this.data.dimensions[y].space==="continuous" ? 1 : 0;
 
 	var space = x_s + y_s;
+	
+	if(this.data.dimensions[x].type==="time" && space===2){
+	    return this.trend(x,[y],tag, height, width, margin);
+	}
 	if(space===0 || space===1)
 	    return this.heatmap(x,y,tag,height,width,margin);
 	else if(space===2){
@@ -123,12 +127,26 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
         var y_s = this.data.dimensions[y].space==="continuous" ? 1 : 0;
 	var z_s = this.data.dimensions[z].space==="continuous" ? 1 : 0;
 
+	if(this.data.dimensions[x].type==="time" && x_s+y_s+z_s===3){
+            return this.trend(x,[y,z],tag, height, width,margin);
+        }
+
 	if((x_s===1 && y_s===1) || z_s ===0 ){
 	    return this.scatterplot3D(x,y,z,tag,height,width,margin);
 	}
 	else {
 	    return this.heatmap3D(x,y,z,tag,height,width,margin);
 	}
+    }
+    else if(dimens.length > 3){
+	var space = 0;
+	for(i = 0; i < dimens.length; i++){
+	    space += this.data.dimensions[dimens[i]].space==="continuous" ? 1 : 0;
+	}
+	if(this.data.dimensions[x].type==="time" && space===dimens.length){
+	    dimens.splice(0, 1); 
+            return this.trend(x,dimens,tag, height, width,margin);
+        }
     }
 
 };
