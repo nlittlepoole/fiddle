@@ -10,7 +10,8 @@ Fiddle.prototype.reset = function (){
 
 Fiddle.prototype.setPeriodContinuous = function(dimension,period){
     var dataset = this.data.dataset;
-    this.data.dimensions[dimension].space = "continuous"
+    this.data.dimensions[dimension].space = "continuous";
+    this.data.dimensions[dimension].type = "number";
     for (i = 0; i < dataset.length; i++) {
         var utcSeconds = dataset[i][dimension];
 	var time = new Date(0); // The 0 there is the key, which sets the date to the epoch
@@ -35,7 +36,8 @@ Fiddle.prototype.setPeriodContinuous = function(dimension,period){
 }
 Fiddle.prototype.setPeriodDiscrete = function(dimension,period){
     var dataset = this.data.dataset;
-    this.data.dimensions[dimension].space = "discrete"
+    this.data.dimensions[dimension].space = "discrete";
+    this.data.dimensions[dimension].type = "number";
     for (i = 0; i < dataset.length; i++) {
         var utcSeconds = dataset[i][dimension];
 	var time = new Date(0); // The 0 there is the key, which sets the date to the epoch
