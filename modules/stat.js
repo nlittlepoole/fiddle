@@ -63,3 +63,38 @@ Fiddle.prototype.stat = function(dimen){
     return result;
 
 };
+Fiddle.prototype.linearRegression = function(a,b){
+    if(this.data.dimensions[a].space != "continuous" || this.data.dimensions[b].space !="continuous")
+	return null;
+    var dataset = this.data.dataset;
+    var x = 0.0;
+    var x_list = [];
+    var y = 0.0;
+    var sxy = 0.0;
+    var sxx = 0.0;
+    var m = 0.0;
+    var c = 0.0;
+    for(i =0; i< dataset.length; i++){
+	var x_ = dataset[i][a];
+	var y_ = dataset[i][b];
+
+	
+	y = (y*i + y_)/(i + 1);
+	x = (x*i + x_)/(i + 1);
+
+    }
+    for(i =0; i< dataset.length; i++){
+	var x_ = dataset[i][a];
+	var y_ = dataset[i][b];
+
+	sxy+= (x_ - x) * (y_ - y);
+	sxx+= (x_ - x)*(x_ - x);
+    }
+    m = sxy /sxx;
+    c = y - m*x;
+    var func = function(t){return m*t +c};
+
+    return func;
+
+
+};
