@@ -98,3 +98,34 @@ Fiddle.prototype.linearRegression = function(a,b){
 
 
 };
+Fiddle.prototype.correlation = function(a,b){
+
+    var dataset = this.data.dataset;
+    var sxy  = 0.0;
+
+    var x = 0.0;
+    var y = 0.0;
+
+    var sxx =0.0;
+    var syy = 0.0;
+
+    for(i =0; i< dataset.length; i++){
+	var x_ = dataset[i][a];
+	var y_ = dataset[i][b];
+
+	y = (y*i + y_)/(i + 1);
+	x = (x*i + x_)/(i + 1);
+
+    }
+    for(i =0; i< dataset.length; i++){
+	var x_ = dataset[i][a];
+	var y_ = dataset[i][b];
+
+	sxy+= (x_ - x) * (y_ - y);
+	sxx += (x_ - x) * (x_ - x);
+	syy += (y_ - y) * (y_ - y);
+
+    }
+
+    return sxy/ Math.sqrt(sxx*syy);
+};
