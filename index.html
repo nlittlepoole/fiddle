@@ -8,7 +8,6 @@
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 <script src="https://rawgit.com/nlittlepoole/fiddle/master/compiled.js"></script>
-
 </head>
 
 <body>
@@ -47,7 +46,7 @@ var data = {"dataset":[],
     },
     "Time":{
     type: "time",
-    space:"discrete",
+    space:"continuous",
     },
     "Words":{
     type: "number",
@@ -68,7 +67,7 @@ for(i = 0; i<100; i++){
     score = {}
     rand["Photos"] = Math.round(Math.random() * 5);
     rand["Comics"] = Math.round(2 * Math.random());
-    rand["Words"] = Math.random() > 0.7 ? 1000 * Math.random() : 1000 * Math.random();
+    rand["Words"] = Math.random() > 0.7 ? Math.round(1000 * Math.random()) : Math.round(1000 * Math.random());
     rand["Time"] = 1374364800 + i*604800 +  3600*(9 + Math.round(Math.random()*15));
     var x = rand["Photos"]/5;
     score["a"] = -1*Math.pow(x,2) + 2*x;
@@ -80,10 +79,15 @@ for(i = 0; i<100; i++){
     rand["Click Rate"] = score.a /3+  score.c/3 +  score.d/3 + Math.random()/10;
     data.dataset.push(rand);
 }
-console.log(data.dataset);
+
 fid = new Fiddle(data);
-fid.setPeriod("Time","hour");
+fid.setPeriodContinuous("Time","hour");
 fid.parallel(".parallel");
+
+//console.log(fid.correlation("Time","Click Rate"));
+
+
+
 
 var dimen_list = d3.keys(data.dimensions);
 dimen_list.unshift("");
@@ -103,26 +107,11 @@ function shuffle(){
      fid.clearFig(".parallel");
  
      fid.explore(dims,".parallel");
+     //fid.save(".parallel");
+
      return false;
+
 }
-
-//fid.histogram("c",".parallel");
-/*
-function test(value) {
-  value.c = value.c *2;
-  return value;
-}
-
-fid.addMap(test);
-fid.map();
-fid.setPeriod("b","month");
-fid.update(".parallel");
-*/
-
-    $("path").tooltip({
-        'container': 'body',
-        'placement': 'center'
-    });
 
 </script>
 </body>
