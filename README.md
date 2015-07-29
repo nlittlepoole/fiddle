@@ -3,21 +3,24 @@
 Fiddle.js is a javascript data sandbox so that you can fiddle with your data and find the best insights
 
   - Uses a standardized json format so that anything can be plugged into fiddle
-  - View overview parallel coordinate view to have an idea of where to start
-  - Pick any combination of dimensions to get dynamic visualizations providing easy insights [WIP]
-  - Let Fiddle auto cluster and predict based on your data [To be done]
+  - View overview parallel coordinate (complete)
+  - Pick any combination of dimensions to get dynamic visualizations providing easy insights (Complete)
+  - Evaluate statistics on any field (complete)
+  - Utilize correlation tests on pairs of fields (complete)
+  - Basic linear projection (ARIMA coming soon)
+  - Let Fiddle auto cluster and predict based on your data (In Progress)
 
 
 > It's difficult to imagine the power that you're going to have when so many
 > different sorts of data are available.
 
-Fiddle is built to be easily deployable and useful for creating dashboards useable by non technical and non data scientist indivduals. Anyone should be able to leverage the power of the data in front of them.
+Fiddle is built to be easily deployable and useful for creating dashboards useable by non technical and non data scientist indivduals. With Fiddle it becomes easier to abstract away common data science tasks like Machine Learning, Statistics, and visualization.  Anyone should be able to leverage the power of the data in front of them. 
 
 ### Demo:
 Play around with a [demo] app I made called [Twiddle] built on top of Fiddle.js
 
 ### Version
-0.2.0
+0.5.0
 
 ### Tech
 
@@ -28,7 +31,7 @@ Fiddle uses just one javascript library.
 ### Build Instructions 
 ```
 ./build.sh
-cp compiled.js ../fiddle.js
+cp compiled.js some_path/fiddle.js
 ```
 ^then use the fiddle.js in the above directory in your script
 You can also use the official [release] version. Note Fiddle is still pre-alpha.
@@ -39,10 +42,10 @@ You can also use the official [release] version. Note Fiddle is still pre-alpha.
 
 var data = {
             "dataset":[
-                {"a":1,"b":2,"c":3,"d":"test"},
-                {"a":2,"b":1448801888,"c":1,"d":"test"},
-                {"a":1,"b":3,"c":2,"d":"firefly"},
-                {"a":3,"b":0,"c":5,"d":"okay"} ],
+                {"a":1,"b":2,"c":1449201888,"d":"test"},
+                {"a":2,"b":1,"c":1448801888,"d":"test"},
+                {"a":1,"b":3,"c":1440911888,"d":"firefly"},
+                {"a":3,"b":0,"c":1412131888,"d":"okay"} ],
             "dimensions":     
                 {"a":{ type: "number", space:"continuous"},
                  "b":{ type: "time", space: "discrete"},
@@ -51,7 +54,7 @@ var data = {
             }
 };
 test = new Fiddle(data);
-test.polar();
+test.parallel("body");
 ```
 
 ### Fiddascheme (Fiddle JSON Schema) 
@@ -92,9 +95,8 @@ Feel free to make a pull request to this repository. This project is being built
 ### Todo's
 
   - Write Tests
-  - Update visuals
-  - Provide field statistics
-  - Build learning and grouping
+  - Bug Fixes
+  - Implement Machine Learning
 
 ### Maintainers:
 [Niger Little-Poole]
