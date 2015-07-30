@@ -46,7 +46,6 @@ Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
 
 	    var truth = [];
 	    var fal = [];
-	    
 	    for(i = 0; i< dataset.length ; i++){
 		var bin = criteria(dataset[i]);
 		dataset[i]["criteria"] = bin;
@@ -58,11 +57,14 @@ Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
 	    var master =dataset;
 	    var testing = master.slice( Math.round(master.length*0.9) , master.length);
 
-	    if(truth.length > fal.length){
+	    if(truth.length >= fal.length){
 		dataset = fal.concat(truth.slice(0,fal.length));
 	    }
 	    else
 		dataset = truth.concat(fal.slice(0,truth.length));
+	    if(truth.length === 0  || fal.length ===0)
+		return function(d){ return {"truth":null, "false":null, "total":null, "error": "criteria doesn't appear in training set"};};
+	    
 	    for(i = 0; i< Math.round(dataset.length * 0.9) ; i++){
 		var bin = criteria(dataset[i]);
 		for(j = 0; j< dimens.length; j++){
@@ -97,7 +99,6 @@ Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
 	    }
 
 	    
-	    console.log(probs);
 
 	    var algo = {};
 	    var error = 0.0;
@@ -115,12 +116,63 @@ Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
 	    return algo;
 
     }
+    else if(criteria in this.data.dimensions && this.data.dimensions[criteria].space === "discrete"){
+	var classifiers = {};
+	var vals = {};
+	for(i = 0; i < dataset.length; i++){
+	    vals[dataset[i][criteria]] = 0;
+	}
+
+
+	for(label in vals){
+	    var crit = generateCriteria(criteria,label); 
+	    classifiers[label] = this.naiveBayes(dimens, crit, alpha, beta);
+	}
+	var classify = multivariateClassifier(classifiers);
+	console.log(dataset[0]);
+	console.log(classify(dataset[0]));
+	return classify;
+    }
     else{
 	console.log("stuf");
+	return null;
+    }
+    
+    function generateCriteria(criteria,label){
+	/* comparison converts to strings because # 0 is falsy and causes false negatives */
+	var crit = function(x){ return String(x[criteria]) === String(label); };
+	return crit;
     }
 
+    function multivariateClassifier(classifiers){
+	var multi = function(test){
+	    var solutions = {};
+	    var prod = 1.0
+	    var error = 0.0;
+	    count = 0;
+	    for(lab in classifiers){
+		var  e = classifiers[lab]["error"];
+		prod *= e;
+		error+=e;
+		count +=1;
+                var sol = classifiers[lab]["classifier"](test);
+		var pos = sol["true"];
+		var neg = sol["false"];
+
+		solutions[lab] = sol["true"] - sol["false"];
+		
+	    }
+
+	    solutions["error"] = error/count;
+	    solutions["independent_error"] = prod;
+	    return solutions;
+	};
+	return multi;
+
+    }
     function classifier(probs,maps,dimens,alpha, beta){
 	return function(test){
+
 	    result = {};
 	    for(label in probs){
 		var w_j = 0.0;
