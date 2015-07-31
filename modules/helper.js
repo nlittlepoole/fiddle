@@ -1,3 +1,25 @@
+Array.prototype.average = function () {
+    var sum = 0, j = 0; 
+    for (var i = 0; i < this.length, isFinite(this[i]); i++) { 
+	sum += parseFloat(this[i]); ++j; 
+    } 
+    return j ? sum / j : 0; 
+};
+Array.prototype.mode = function mode(arr) {
+    var numMapping = {};
+    var greatestFreq = 0;
+    var mode;
+    arr.forEach(function findMode(number) {
+	    numMapping[number] = (numMapping[number] || 0) + 1;
+
+	    if (greatestFreq < numMapping[number]) {
+		greatestFreq = numMapping[number];
+		mode = number;
+	    }
+	});
+    return +mode;
+};
+
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
