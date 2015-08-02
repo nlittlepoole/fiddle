@@ -1,6 +1,15 @@
-Fiddle.prototype.kmeans = function(k, dimens){
-    k = 2;
-    dimens = this.data.dimensions;
+Fiddle.prototype.kmeans = function(k, weights){
+
+    feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
+    weights = !weights ? {} : weights;
+    k = !k ?  Math.ceil(Math.sqrt(feats.length / 2 )) : k;
+
+    var dimens = {};
+    for(i =0; i < feats.length; i++){
+	dimens[feats[i]] = this.data.dimensions[feats[i]];
+	weights[feats[i]] = !weights[feats[i]] ? 1 : weights[feats[i]] ;
+    }
+
     var dataset = this.data.dataset;
     for(dimen in dimens){
 	if(dimens[dimen]["space"] === "continuous" || dimens[dimen]["type"] ==="number"){
@@ -13,12 +22,15 @@ Fiddle.prototype.kmeans = function(k, dimens){
 	    dimens[dimen]["range"] = max - min;
         }
     }
-    var cens = [{"Photos": 0, "Comics": 2, "Words": 800, "Time": 22, "Click Rate": 0.3212601397060457}, {"Photos": 3, "Comics": 0, "Words": 200, "Time": 7 , "Click Rate": 0.8212601397060457}];
-
+    var cens = [];
+    for(i = 0; i< k; i++){
+	var index = Math.round(Math.random()* dataset.length);
+	cens.push(dataset[index]);
+    }
     var centroids = [];
     var avgs = [];
     var res = [];
-    for(j =0; j <10; j++){
+    for(j =0; j <5; j++){
         for(i = 0; i < k ; i++){
 	    avgs[i] = {};
 	    cens[i]["&&res&&"] = i ;
@@ -26,7 +38,7 @@ Fiddle.prototype.kmeans = function(k, dimens){
        } 
 
         for(i = 0; i < dataset.length; i++){
-	    var near = nearest(centroids,dataset[i],dimens);
+	    var near = nearest(centroids,dataset[i],dimens, weights);
 	    for(key in dataset[i]){
 	        avgs[near["&&res&&"]][key] = avgs[near["&&res&&"]][key] != null ? avgs[near["&&res&&"]][key] : [];
 	        avgs[near["&&res&&"]][key].push(dataset[i][key]);
@@ -44,18 +56,20 @@ Fiddle.prototype.kmeans = function(k, dimens){
 	for(i =0 ; i<avgs.length; i++){
 	    var temp = {};
 	    for(key in avgs[i]){
-		temp[key] = this.data.dimensions[key]["space"] === "continuous" || this.data.dimensions[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
+		if(key != "&&res&&"){
+		    temp[key] = this.data.dimensions[key]["space"] === "continuous" || this.data.dimensions[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
+		}
 	    }
 	    result.push(temp);
 	}
 	return result;
     }
 
-    function nearest(centroids, test, dimens){
+    function nearest(centroids, test, dimens,weights){
 	var min = 1000000;
 	var result = null;
 	for(var i =0; i < centroids.length; i++){
-	    var dist = euclidianDistance(test, centroids[i]);
+	    var dist = euclidianDistance(test, centroids[i], weights);
 	    if(dist  < min){
 		result = centroids[i];
 		min = dist;
@@ -64,12 +78,13 @@ Fiddle.prototype.kmeans = function(k, dimens){
 	
 	return result;
     }
-    function euclidianDistance(a,b){
+    function euclidianDistance(a,b,weights){
 	sum = 0;
 	for(d in a){
-
-	    var diff = this.data.dimensions[d].type=="number" || dimens[d].space=="continuous" ? (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
-	    sum += Math.pow(diff , 2);
+	    if(d != "&&res&&"){
+		var diff = this.data.dimensions[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
+		sum += Math.pow(diff , 2);
+	    }
 	}
 	return Math.sqrt(sum);
     }
