@@ -1,6 +1,19 @@
-Fiddle.prototype.decisionTree = function(dimen, condition){
+Fiddle.prototype.decisionClassify = function(test, tree){
+    if(typeof tree === 'boolean')
+	return tree;
+    var root = tree["root"]["funcs"]["func"];
+    var decision = root(test);
+
+    if(!decision)
+	return this.decisionClassify(test, tree["false"]);
+    else
+	return this.decisionClassify(test, tree["true"]);
+}
+
+    Fiddle.prototype.decisionTree = function(dimen, condition, n){
     var dataset = [];
     var dimens = clone(this.data.dimensions);
+    n = !n ? 10: n;
 
     var funcs = {};
     var X = 0;
@@ -26,13 +39,23 @@ Fiddle.prototype.decisionTree = function(dimen, condition){
 
     }
     
-    return tree(funcs, X, dataset);
+    var dtree =  tree(funcs, X,n, dataset.splice(0, Math.round(dataset.length*.9)));
+    var err = 0.0;
+    /*
+    var testing = dataset.splice(Math.round(dataset.length*.6), dataset.length);
+    for(i =0; i <testing.length; i++){
+	console.log(testing[i]);
+	console.log(this.decisionClassify(testing[i], dtree));
+	err += this.decisionClassify(testing[i], dtree) === testing[i]["criteria"] ? 0 : 1 ; 
+    }
+    console.log(err/testing.length); */
+    return dtree;
+		      
 
 
-
-    function tree( funcs, X, dataset,depth){
+    function tree( funcs, X,n, dataset,depth){
 	depth = !depth ? 0 : depth;
-	if(depth >4)
+	if(depth >n)
 	    return "Leaf";
 	var results = {};
 	var max = -2000;
@@ -56,28 +79,27 @@ Fiddle.prototype.decisionTree = function(dimen, condition){
 	var truth = results["root"]["funcs"]["vals"]["true"].concat(results["root"]["funcs"]["vals"]["false"]);
 	var fal = results["root"]["funcs"]["vals"]["rejected"].concat(results["root"]["funcs"]["vals"]["missed"]);
 
-
 	var x = results["root"]["funcs"]["vals"]["true"].length  / (results["root"]["funcs"]["vals"]["true"].length  + results["root"]["funcs"]["vals"]["false"].length);
 	var y = results["root"]["funcs"]["vals"]["missed"].length  / (results["root"]["funcs"]["vals"]["rejected"].length  + results["root"]["funcs"]["vals"]["missed"].length);
 
 	var deep = depth + 1;
 
 
-	results["true"] = tree(funcs, x, truth, deep );
+	results["true"] = tree(funcs, x,n, truth, deep );
 	results["true"] = results["true"] ==="Leaf" ? ( x >.5 ? true  :false   )  : results["true"];
-
-	if(results ==="Leaf" || results ==="Leaf")
-	    console.log(x + "," + y);
 	
-	results["false"] = tree(funcs, x, fal, deep);
+	results["false"] = tree(funcs, x,n, fal, deep);
 	results["false"] = results["false"] ==="Leaf" ? ( y >.5 ? true  : false   )  : results["false"];
 
 	return results;
     }
 
 
-    function H(lst, dataset, X){
+    function H(lst, dset, X){
+	var dataset = dset.slice();
 	var funcs = clone(lst);
+	for(f in funcs)
+	    funcs[f]["vals"] = {"true" : [], "false": [], "rejected":[], "missed": [] };
 	for(i = 0; i< dataset.length; i++){
 	    for(f in funcs){
 		var check = funcs[f]["func"](dataset[i]);
@@ -91,8 +113,7 @@ Fiddle.prototype.decisionTree = function(dimen, condition){
 		}
 		else{
                     var addend = dataset[i]["criteria"];
-
-                    if(!addend)
+                    if(addend)
                         funcs[f]["vals"]["missed"].push(dataset[i]);
                     else
                         funcs[f]["vals"]["rejected"].push(dataset[i]);;
