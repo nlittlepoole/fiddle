@@ -68,7 +68,6 @@ var line = d3.svg.line(),
 var cat_scale = null;
 // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(dataset[0]).filter(function(d) {
-	    
 		if(d ==="magnitude"){
 		    return false;
 		}

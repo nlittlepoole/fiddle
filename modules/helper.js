@@ -1,3 +1,14 @@
+clone = function (p,c) { 
+    var c = c||{}; 
+    for (var i in p) { 
+	if (typeof p[i] === 'object') { 
+	    c[i] = (p[i].constructor === Array)?[]:{};  
+	    clone(p[i],c[i]);   }
+	else 
+	    c[i] = p[i];
+    } 
+    return c; 
+} ;
 Array.prototype.average = function () {
     var sum = 0, j = 0; 
     for (var i = 0; i < this.length, isFinite(this[i]); i++) { 
