@@ -1,5 +1,4 @@
-Fiddle.prototype.kmeans = function(k, weights){
-
+Fiddle.prototype.kmeans = function(k, weights,dataset){
     feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
     weights = !weights ? {} : weights;
     k = !k ?  Math.ceil(Math.sqrt(feats.length / 2 )) : k;
@@ -10,7 +9,7 @@ Fiddle.prototype.kmeans = function(k, weights){
 	weights[feats[i]] = !weights[feats[i]] ? 1 : weights[feats[i]] ;
     }
 
-    var dataset = this.data.dataset;
+    dataset = !dataset ? this.data.dataset : dataset;
     for(dimen in dimens){
 	if(dimens[dimen]["space"] === "continuous" || dimens[dimen]["type"] ==="number"){
 	    var max = -200000000;
@@ -19,7 +18,7 @@ Fiddle.prototype.kmeans = function(k, weights){
 	        max = dataset[i][dimen] > max ? dataset[i][dimen] : max;
 		min = dataset[i][dimen] < min ? dataset[i][dimen] : min;
 	    }
-	    dimens[dimen]["range"] = max - min;
+	    dimens[dimen]["range"] = max - min > 0 ? max - min  : (max !=0 ? max : 1) ;
         }
     }
     var cens = [];
@@ -75,7 +74,6 @@ Fiddle.prototype.kmeans = function(k, weights){
 		min = dist;
 	    }
 	}
-	
 	return result;
     }
     function euclidianDistance(a,b,weights){

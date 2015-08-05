@@ -39,16 +39,11 @@ Fiddle.prototype.decisionClassify = function(test, tree){
 
     }
     
-    var dtree =  tree(funcs, X,n, dataset.splice(0, Math.round(dataset.length*.9)));
+    var dtree =  tree(funcs, X,n, dataset);
     var err = 0.0;
-    /*
+    
     var testing = dataset.splice(Math.round(dataset.length*.6), dataset.length);
-    for(i =0; i <testing.length; i++){
-	console.log(testing[i]);
-	console.log(this.decisionClassify(testing[i], dtree));
-	err += this.decisionClassify(testing[i], dtree) === testing[i]["criteria"] ? 0 : 1 ; 
-    }
-    console.log(err/testing.length); */
+
     return dtree;
 		      
 
