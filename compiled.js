@@ -224,7 +224,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	}
 	res.push(temp);
     }
-    console.log(res);
+
     return this.kmeans(k, weights, res);
 
     function update(centroids, test, closest){
@@ -237,7 +237,6 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	norm = Math.sqrt(norm);
 	for(var i =0; i < centroids.length; i++){
 	    var dist = 1 - euclidianDistance(statik, centroids[i], weights) / norm;  
-	    console.log(dist);
 	    if(dist > .65)
 		result.push( mid(test, centroids[i], dist  ));
 	    else
@@ -262,20 +261,6 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     }
 
      
-
-    function average(avgs){
-	var result = [];
-	for(i =0 ; i<avgs.length; i++){
-	    var temp = {};
-	    for(key in avgs[i]){
-		if(key != "&&res&&" && !key.indexOf("weight") >- 1){
-		    temp[key] = this.data.dimensions[key]["space"] === "continuous" || this.data.dimensions[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
-		}
-	    }
-	    result.push(temp);
-	}
-	return result;
-    }
 
     function nearest(centroids, test, dimens,weights){
 	var min = 1000000;
@@ -518,11 +503,12 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
             x.domain(d3.extent(dataset, function(d) {  return d[x_dim]; })).nice();
 	    y.domain(d3.extent(dataset, function(d) {  return d[y_dim]; })).nice();
 
-	    svg.append("g")
-		.attr("class", "x axis")
+               svg.append("g")
+                .attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis)
 		.append("text")
+
 		.attr("class", "label")
 		.attr("x", width)
 		.attr("y", -6)
@@ -719,6 +705,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     .enter().append("text")
     .html(function(d) { return label(d,y); })
     .attr("x", 0)
+    .attr("font-size", "20px")
     .attr("y", function (d, i) { return i * gridSize; })
     .style("text-anchor", "end")
     .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
@@ -1472,7 +1459,8 @@ Fiddle.prototype.save = function(tag){
     console.log(tag);
     saveSvgAsPng(document.getElementById(tag), tag + ".png");
     svg.style("background-color", "");
-};Fiddle.prototype.kmeans = function(k, weights,dataset){
+};
+Fiddle.prototype.kmeans = function(k, weights,dataset){
     feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
     weights = !weights ? {} : weights;
     k = !k ?  Math.ceil(Math.sqrt(feats.length / 2 )) : k;
@@ -1497,7 +1485,7 @@ Fiddle.prototype.save = function(tag){
     }
     var cens = [];
     for(i = 0; i< k; i++){
-	var index = Math.round(Math.random()* dataset.length);
+	var index = Math.round(Math.random()* (dataset.length -1 ));
 	cens.push(dataset[index]);
     }
     var centroids = [];
@@ -1512,11 +1500,12 @@ Fiddle.prototype.save = function(tag){
 
         for(i = 0; i < dataset.length; i++){
 	    var near = nearest(centroids,dataset[i],dimens, weights);
+	    if(near){
 	    for(key in dataset[i]){
 	        avgs[near["&&res&&"]][key] = avgs[near["&&res&&"]][key] != null ? avgs[near["&&res&&"]][key] : [];
 	        avgs[near["&&res&&"]][key].push(dataset[i][key]);
 	    }
-
+	    }
         }				   
 	        
         cens = average(avgs);

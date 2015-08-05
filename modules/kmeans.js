@@ -23,7 +23,7 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
     }
     var cens = [];
     for(i = 0; i< k; i++){
-	var index = Math.round(Math.random()* dataset.length);
+	var index = Math.round(Math.random()* (dataset.length -1 ));
 	cens.push(dataset[index]);
     }
     var centroids = [];
@@ -38,11 +38,12 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
 
         for(i = 0; i < dataset.length; i++){
 	    var near = nearest(centroids,dataset[i],dimens, weights);
+	    if(near){
 	    for(key in dataset[i]){
 	        avgs[near["&&res&&"]][key] = avgs[near["&&res&&"]][key] != null ? avgs[near["&&res&&"]][key] : [];
 	        avgs[near["&&res&&"]][key].push(dataset[i][key]);
 	    }
-
+	    }
         }				   
 	        
         cens = average(avgs);
