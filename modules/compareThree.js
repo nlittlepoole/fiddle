@@ -8,7 +8,10 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
     height = height - margin.top - margin.bottom;
 
     var dimens = clone(this.data.dimensions);
-    var dataset  = this.data.dimensions;
+
+    var dataset  = this.data.dataset;
+
+    
     var x = d3.scale.linear()
     .range([0, width]);
 
@@ -114,8 +117,8 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
 		.attr("dy", ".35em")
 		.style("text-anchor", "start")
                 .html(function(d) { return "&le; " +  d; });
-
-
+    this.figures[tag] = Fiddle.prototype.scatterplot3D.bind(this,x,y,z,tag,height ,width ,margin);
+    return svg;
 
 };
 Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
@@ -335,6 +338,6 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     .attr("y", height + gridSize*1.25)
     .style({"fill":"#aaa"});
 
-    this.figures[tag] = Fiddle.prototype.heatmap.bind(this,x,y,tag,height ,width ,margin);
+    this.figures[tag] = Fiddle.prototype.heatmap3D.bind(this,x,y,z,tag,height ,width ,margin);
     return svg;
 };
