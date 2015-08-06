@@ -129,7 +129,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     height = height == null ? 450 : height;
     height = height - margin.top - margin.bottom;
 
-
+    var dimens = clone(this.data.dimensions);
     var unmerged = this.data.dataset;
     var merged = {};
     var dataset = [];
