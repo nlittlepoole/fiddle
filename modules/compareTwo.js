@@ -89,7 +89,6 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 
 
     var label = function(val, dim){
-	console.log(dimens);
 
 	if(dimens[dim].type==="number"){
 	    if(dimens[dim].space ==="discrete"){

@@ -7,8 +7,8 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
     height = height == null ? 450 : height;
     height = height - margin.top - margin.bottom;
 
-
-    var dataset  = this.data.dataset;
+    var dimens = clone(this.data.dimensions);
+    var dataset  = this.data.dimensions;
     var x = d3.scale.linear()
     .range([0, width]);
 
@@ -229,11 +229,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     width = horizontal.length>9 ? gridSize*(horizontal.length + 1) : gridSize*10;
     var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
     var label = function(val, dim){
-        if(this.data.dimensions[dim].type==="number"){
-            if(this.data.dimensions[dim].space ==="discrete"){
+        if(dimens[dim].type==="number"){
+            if(dimens[dim].space ==="discrete"){
                 return Math.round(100*val)/100;
             }
-            else if(this.data.dimensions[dim].space ==="continuous"){
+            else if(dimens[dim].space ==="continuous"){
                 return "&le; " + Math.round(100*val)/100;
             }
         }
