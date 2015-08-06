@@ -99,6 +99,7 @@ Fiddle.prototype.update = function(tag){
 };
 Fiddle.prototype.overview = this.parallel;
 Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
+
     if(dimens.length ===1){
 	return this.histogram(dimens[0],tag, height,width,margin);
     }
@@ -150,5 +151,6 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
             return this.trend(x,dimens,tag, height, width,margin);
         }
     }
-
+    
+    return this.parallel(tag);
 };
