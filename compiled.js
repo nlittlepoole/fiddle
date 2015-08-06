@@ -1,11 +1,11 @@
 function Fiddle( json){
-    this.data = json;
-    this.master = json;
+    this.data = clone(json);
+    this.master = clone(json);
     this.figures = {}
 }
 
 Fiddle.prototype.reset = function (){
-    this.data = this.master;
+    this.data = clone(this.master);
 }
 
 Fiddle.prototype.setPeriodContinuous = function(dimension,period){
@@ -68,7 +68,7 @@ Fiddle.prototype.clearFig = function(tag){
 };
 
 Fiddle.prototype.clear = function (){
-    this.data = this.master;
+    this.data = clone(this.master);
     for(tag in this.figures){
 	d3.select(tag).html("");
     }
@@ -99,6 +99,7 @@ Fiddle.prototype.update = function(tag){
 };
 Fiddle.prototype.overview = this.parallel;
 Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
+
     if(dimens.length ===1){
 	return this.histogram(dimens[0],tag, height,width,margin);
     }
@@ -150,7 +151,8 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
             return this.trend(x,dimens,tag, height, width,margin);
         }
     }
-
+    
+    return this.parallel(tag);
 };Fiddle.prototype.som = function(k, weights, step){
 
     feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
@@ -503,12 +505,11 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
             x.domain(d3.extent(dataset, function(d) {  return d[x_dim]; })).nice();
 	    y.domain(d3.extent(dataset, function(d) {  return d[y_dim]; })).nice();
 
-               svg.append("g")
-                .attr("class", "x axis")
+	    svg.append("g")
+		.attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis)
 		.append("text")
-
 		.attr("class", "label")
 		.attr("x", width)
 		.attr("y", -6)
@@ -705,7 +706,6 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     .enter().append("text")
     .html(function(d) { return label(d,y); })
     .attr("x", 0)
-    .attr("font-size", "20px")
     .attr("y", function (d, i) { return i * gridSize; })
     .style("text-anchor", "end")
     .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
@@ -798,7 +798,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     height = height == null ? 450 : height;
     height = height - margin.top - margin.bottom;
 
-
+    var dimens = clone(this.data.dimensions);
     var unmerged = this.data.dataset;
     var merged = {};
     var dataset = [];
@@ -861,7 +861,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     for (key in merged) {
     dataset.push(merged[key]);
     }
-    console.log(dataset);
+    console.log(this.data);
     var horizontal = hor.unique();
     var vertical = ver.unique();
     
@@ -878,11 +878,13 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 
 
     var label = function(val, dim){
-	if(this.data.dimensions[dim].type==="number"){
-	    if(this.data.dimensions[dim].space ==="discrete"){
+	console.log(dimens);
+
+	if(dimens[dim].type==="number"){
+	    if(dimens[dim].space ==="discrete"){
 		return Math.round(100*val)/100;
 	    }
-	    else if(this.data.dimensions[dim].space ==="continuous"){
+	    else if(dimens[dim].space ==="continuous"){
 		return "&le; " + Math.round(100*val)/100;
 	    }
 	}
@@ -1459,8 +1461,7 @@ Fiddle.prototype.save = function(tag){
     console.log(tag);
     saveSvgAsPng(document.getElementById(tag), tag + ".png");
     svg.style("background-color", "");
-};
-Fiddle.prototype.kmeans = function(k, weights,dataset){
+};Fiddle.prototype.kmeans = function(k, weights,dataset){
     feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
     weights = !weights ? {} : weights;
     k = !k ?  Math.ceil(Math.sqrt(feats.length / 2 )) : k;

@@ -1,11 +1,11 @@
 function Fiddle( json){
-    this.data = json;
-    this.master = json;
+    this.data = clone(json);
+    this.master = clone(json);
     this.figures = {}
 }
 
 Fiddle.prototype.reset = function (){
-    this.data = this.master;
+    this.data = clone(this.master);
 }
 
 Fiddle.prototype.setPeriodContinuous = function(dimension,period){
@@ -68,7 +68,7 @@ Fiddle.prototype.clearFig = function(tag){
 };
 
 Fiddle.prototype.clear = function (){
-    this.data = this.master;
+    this.data = clone(this.master);
     for(tag in this.figures){
 	d3.select(tag).html("");
     }

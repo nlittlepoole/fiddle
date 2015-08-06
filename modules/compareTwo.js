@@ -9,7 +9,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     height = height == null ? 450 : height;
     height = height - margin.top - margin.bottom;
 
-
+    var dimens = clone(this.data.dimensions);
     var unmerged = this.data.dataset;
     var merged = {};
     var dataset = [];
@@ -72,7 +72,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     for (key in merged) {
     dataset.push(merged[key]);
     }
-    console.log(dataset);
+    console.log(this.data);
     var horizontal = hor.unique();
     var vertical = ver.unique();
     
@@ -89,11 +89,13 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 
 
     var label = function(val, dim){
-	if(this.data.dimensions[dim].type==="number"){
-	    if(this.data.dimensions[dim].space ==="discrete"){
+	console.log(dimens);
+
+	if(dimens[dim].type==="number"){
+	    if(dimens[dim].space ==="discrete"){
 		return Math.round(100*val)/100;
 	    }
-	    else if(this.data.dimensions[dim].space ==="continuous"){
+	    else if(dimens[dim].space ==="continuous"){
 		return "&le; " + Math.round(100*val)/100;
 	    }
 	}
