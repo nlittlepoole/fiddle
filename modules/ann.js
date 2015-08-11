@@ -6,11 +6,11 @@ Fiddle.prototype.som = function(k, weights, step){
     step = !step ? .2  : step;
     var dimens = {};
     for(i =0; i < feats.length; i++){
-	dimens[feats[i]] = this.data.dimensions[feats[i]];
+	dimens[feats[i]] = clone(this.data.dimensions[feats[i]]);
 	weights[feats[i]] = !weights[feats[i]] ? 1 : weights[feats[i]] ;
     }
 
-    var dataset = this.data.dataset;
+    var dataset = cloneL(this.data.dataset);
     for(dimen in dimens){
 	if(dimens[dimen]["space"] === "continuous" || dimens[dimen]["type"] ==="number"){
 	    var max = -200000000;
@@ -26,7 +26,7 @@ Fiddle.prototype.som = function(k, weights, step){
         }
     }
     var cens = [];
-    var neurons = Object.keys(this.data.dimensions).length * 8;
+    var neurons = Object.keys(dimens).length * 8;
     for(i = 0; i< neurons; i++){
 	var index = Math.round(Math.random()* dataset.length);
 	cens.push(dataset[index]);
@@ -39,6 +39,7 @@ Fiddle.prototype.som = function(k, weights, step){
 	    avgs[i] = {};
 	    var temp = clone(cens[i]);
 	    for(key in temp){
+		if(key != "magnitude"){
 		temp[key + "_weights"] = {};
 		var max = 0;
 		for(r =0; r < dimens[key]["distincts"].length; r++){
@@ -51,6 +52,7 @@ Fiddle.prototype.som = function(k, weights, step){
 		    }
 		}
 		temp[key + "_weights"]["max"] = max;
+		}
 	    }
 	    temp["&&res&&"] = i ;
 	    centroids.push(temp);
@@ -58,7 +60,7 @@ Fiddle.prototype.som = function(k, weights, step){
 
         for(i = 0; i < dataset.length; i++){
 	    var near = nearest(centroids,dataset[i],dimens, weights);
-	    centroids = update(centroids,dataset[i], near);
+	    centroids = update(centroids,dataset[i], near,dimens);
 
         }				   
 	
@@ -74,7 +76,7 @@ Fiddle.prototype.som = function(k, weights, step){
 
     return this.kmeans(k, weights, res);
 
-    function update(centroids, test, closest){
+    function update(centroids, test, closest,dimens){
 	var result = [];
 	var norm = 0.0;
 	var statik = clone(closest);
@@ -83,7 +85,7 @@ Fiddle.prototype.som = function(k, weights, step){
 	}
 	norm = Math.sqrt(norm);
 	for(var i =0; i < centroids.length; i++){
-	    var dist = 1 - euclidianDistance(statik, centroids[i], weights) / norm;  
+	    var dist = 1 - euclidianDistance(statik, centroids[i], weights,dimens) / norm;  
 	    if(dist > .65)
 		result.push( mid(test, centroids[i], dist  ));
 	    else
@@ -113,7 +115,7 @@ Fiddle.prototype.som = function(k, weights, step){
 	var min = 1000000;
 	var result = null;
 	for(var i =0; i < centroids.length; i++){
-	    var dist = euclidianDistance(test, centroids[i], weights);
+	    var dist = euclidianDistance(test, centroids[i], weights,dimens);
 	    if(dist  < min){
 		result = centroids[i];
 		min = dist;
@@ -122,11 +124,11 @@ Fiddle.prototype.som = function(k, weights, step){
 	
 	return result;
     }
-    function euclidianDistance(a,b,weights){
+    function euclidianDistance(a,b,weights,dimens){
 	sum = 0;
 	for(d in a){
 	    if(d != "&&res&&" && ! (d.indexOf("_weights") >- 1 )){
-		var diff = this.data.dimensions[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
+		var diff = dimens[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
 		sum += Math.pow(diff , 2);
 	    }
 	}

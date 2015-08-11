@@ -5,7 +5,7 @@ Fiddle.prototype.stat = function(dimen){
 	return d;
     };
 
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
     var dimension = this.data.dimensions[dimen];
     var space = dimension.space;
     var type = dimension.type;
@@ -47,7 +47,7 @@ Fiddle.prototype.stat = function(dimen){
 	}
     }
     result = {};
-    result.distinct = vals.unique().length *1.0 / vals.length;
+    result.distinct = vals.unique().length;
     result.mode = type==="time"  ? epoch(mode) : mode;
     result.type = type;
     result.count = vals.length;
@@ -66,7 +66,7 @@ Fiddle.prototype.stat = function(dimen){
 Fiddle.prototype.linearRegression = function(a,b){
     if(this.data.dimensions[a].space != "continuous" || this.data.dimensions[b].space !="continuous")
 	return null;
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
     var x = 0.0;
     var x_list = [];
     var y = 0.0;
@@ -100,7 +100,7 @@ Fiddle.prototype.linearRegression = function(a,b){
 };
 Fiddle.prototype.correlation = function(a,b){
 
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
     var sxy  = 0.0;
 
     var x = 0.0;

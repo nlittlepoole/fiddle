@@ -1,5 +1,5 @@
 Fiddle.prototype.kmeans = function(k, weights,dataset){
-    feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
+    feats = !weights ? Object.keys(clone(this.data.dimensions)) : Object.keys(weights); 
     weights = !weights ? {} : weights;
     k = !k ?  Math.ceil(Math.sqrt(feats.length / 2 )) : k;
 
@@ -9,7 +9,7 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
 	weights[feats[i]] = !weights[feats[i]] ? 1 : weights[feats[i]] ;
     }
 
-    dataset = !dataset ? this.data.dataset : dataset;
+    dataset = !dataset ? cloneL(this.data.dataset) : dataset;
     for(dimen in dimens){
 	if(dimens[dimen]["space"] === "continuous" || dimens[dimen]["type"] ==="number"){
 	    var max = -200000000;
@@ -37,7 +37,7 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
        } 
 
         for(i = 0; i < dataset.length; i++){
-	    var near = nearest(centroids,dataset[i],dimens, weights);
+	    var near = nearest(centroids,dataset[i],dimens, weights,dimens);
 	    if(near){
 	    for(key in dataset[i]){
 	        avgs[near["&&res&&"]][key] = avgs[near["&&res&&"]][key] != null ? avgs[near["&&res&&"]][key] : [];
@@ -46,18 +46,19 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
 	    }
         }				   
 	        
-        cens = average(avgs);
+        cens = average(avgs, dimens);
 	res = cens;
 	avgs = [];
     }
     return cens;
-    function average(avgs){
+
+    function average(avgs, dimens){
 	var result = [];
 	for(i =0 ; i<avgs.length; i++){
 	    var temp = {};
 	    for(key in avgs[i]){
 		if(key != "&&res&&"){
-		    temp[key] = this.data.dimensions[key]["space"] === "continuous" || this.data.dimensions[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
+		    temp[key] = dimens[key]["space"] === "continuous" || dimens[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
 		}
 	    }
 	    result.push(temp);
@@ -65,11 +66,11 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
 	return result;
     }
 
-    function nearest(centroids, test, dimens,weights){
+    function nearest(centroids, test, dimensions,weights,dimens){
 	var min = 1000000;
 	var result = null;
 	for(var i =0; i < centroids.length; i++){
-	    var dist = euclidianDistance(test, centroids[i], weights);
+	    var dist = euclidianDistance(test, centroids[i], weights,dimens);
 	    if(dist  < min){
 		result = centroids[i];
 		min = dist;
@@ -77,14 +78,15 @@ Fiddle.prototype.kmeans = function(k, weights,dataset){
 	}
 	return result;
     }
-    function euclidianDistance(a,b,weights){
+    function euclidianDistance(a,b,weights,dimens){
 	sum = 0;
 	for(d in a){
 	    if(d != "&&res&&"){
-		var diff = this.data.dimensions[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
+		var diff = dimens[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
 		sum += Math.pow(diff , 2);
 	    }
 	}
+
 	return Math.sqrt(sum);
     }
 

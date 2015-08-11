@@ -5,7 +5,7 @@ Fiddle.prototype.trend = function (x_dim, trends ,tag, height, width, margin){
     width = 960 - margin.left - margin.right;
     height = 500 - margin.top - margin.bottom;
     
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
 
     var x = d3.time.scale()
     .range([0, width]);
@@ -35,13 +35,13 @@ Fiddle.prototype.trend = function (x_dim, trends ,tag, height, width, margin){
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== x_dim; }));
+    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== x_dim; }));
 
-	    dataset.forEach(function(d) {
-		    var date = new Date(0); // The 0 there is the key, which sets the date to the epoch
-		    date.setUTCSeconds(d[x_dim]);
-		    d.date = date;
-		});
+    dataset.forEach(function(d) {
+	   var date = new Date(0); // The 0 there is the key, which sets the date to the epoch
+	   date.setUTCSeconds(d[x_dim]);
+	   d.date = date;
+    });
 
     var dimens = color.domain().map(function(name) {
 		    if(trends.indexOf(name) > -1){
@@ -51,7 +51,7 @@ Fiddle.prototype.trend = function (x_dim, trends ,tag, height, width, margin){
 				return {date: d.date, value: +d[name]};
 			    })
 		    };}
-		});
+    });
     dimens  = dimens.filter(function(n){ return n != undefined }); 
 	    x.domain(d3.extent(dataset, function(d) { return d.date; }));
 	    y.domain([

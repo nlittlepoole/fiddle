@@ -9,10 +9,11 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
     height = height == null ? 550 : height;
     height = height - margin.top - margin.bottom;
 
+    var dimens = clone(this.data.dimensions);
     var color = d3.scale.category20b();
     for( i=0; i < 10;i++){
 	color(i);
-    }
+    } 
     var col = dimension.length % 20;
     var svg =  d3.select(tag).append("svg")
 	.attr("width", width + margin.left + margin.right)
@@ -21,33 +22,30 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	.append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    if (this.data.dimensions[dimension].space==="discrete"){
-    var dataset = [];
-    var raw = {};
-    for (i =0; i < this.data.dataset.length; i++){
-	var temp = this.data.dataset[i];
-	var val = temp[dimension];
-	raw[val] = val in raw ? raw[val]  : {"name": val, "frequency":0  }  ;
-	raw[val].frequency+=1;
-    }
-    for(v in raw){
-	dataset.push(raw[v]);
-    }
+    if (dimens[dimension].space==="discrete"){
+        var dataset = [];
+        var raw = {};
+        for (i =0; i < this.data.dataset.length; i++){
+	    var temp = clone(this.data.dataset[i]);
+	    var val = temp[dimension];
+	    raw[val] = val in raw ? raw[val]  : {"name": val, "frequency":0  }  ;
+	    raw[val].frequency+=1;
+        }
+        for(v in raw){
+	    dataset.push(raw[v]);
+        }
+        var x = d3.scale.ordinal()
+	    .rangeRoundBands([0, width], .1);
+        var y = d3.scale.linear()
+	    .range([height, 25]);
 
-    var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
+        var xAxis = d3.svg.axis()
+	    .scale(x)
+	    .orient("bottom");
 
-    var y = d3.scale.linear()
-    .range([height, 25]);
-
-    var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-
+	var yAxis = d3.svg.axis()
+	    .scale(y)
+	    .orient("left");
 
 	x.domain(dataset.map(function(d) { return d.name; }));
 	y.domain([0, d3.max(dataset, function(d) { return d.frequency; })]);
@@ -60,13 +58,13 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	    .attr("dy", ".71em")
             .attr("font-size", "20px")
             .attr("x", width/2)
-    .attr("y", 25) 
+	    .attr("y", 25) 
 	    .style("text-anchor", "middle")
 	    .text(dimension);
 
 
 	var bar = svg.selectAll(".bar")
-    .data(dataset).enter().append("g").attr("class", "bar");
+	    .data(dataset).enter().append("g").attr("class", "bar");
     
        bar.append("rect")
 	   .style("fill", color(col))
@@ -84,7 +82,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	    .attr("text-anchor", "middle")
 	    .text(function(d) { return d.frequency; });
     }
-    else if(this.data.dimensions[dimension].space==="continuous"){
+    else if(dimens[dimension].space==="continuous"){
 
 	var values = [];
 	for (i =0; i < this.data.dataset.length; i++){
@@ -150,7 +148,7 @@ Fiddle.prototype.histogram = function(dimension, tag ,height, width, margin) {
 	    .attr("dy", ".71em")
             .attr("font-size", "20px")
             .attr("x", width/2)
-    .attr("y", 25) 
+	.attr("y", 25) 
 	    .style("text-anchor", "middle")
 	    .text(dimension);
 

@@ -1,5 +1,5 @@
 Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
 
     var maps = {};
     var probs = {};
@@ -8,7 +8,8 @@ Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
     probs["total"] = {};
     var alpha = .05;
     var beta = .1;
-    for (i =0; i < this.data.dataset.length; i++){
+
+    for (i =0; i < dataset.length; i++){
 	  for(j=0; j< dimens.length; j++){
 	      if(dimens[j] in maps){
 		  maps[dimens[j]]["values"].push(dataset[i][dimens[j]]);

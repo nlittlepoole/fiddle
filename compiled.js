@@ -161,11 +161,11 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     step = !step ? .2  : step;
     var dimens = {};
     for(i =0; i < feats.length; i++){
-	dimens[feats[i]] = this.data.dimensions[feats[i]];
+	dimens[feats[i]] = clone(this.data.dimensions[feats[i]]);
 	weights[feats[i]] = !weights[feats[i]] ? 1 : weights[feats[i]] ;
     }
 
-    var dataset = this.data.dataset;
+    var dataset = cloneL(this.data.dataset);
     for(dimen in dimens){
 	if(dimens[dimen]["space"] === "continuous" || dimens[dimen]["type"] ==="number"){
 	    var max = -200000000;
@@ -181,7 +181,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
         }
     }
     var cens = [];
-    var neurons = Object.keys(this.data.dimensions).length * 8;
+    var neurons = Object.keys(dimens).length * 8;
     for(i = 0; i< neurons; i++){
 	var index = Math.round(Math.random()* dataset.length);
 	cens.push(dataset[index]);
@@ -194,6 +194,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	    avgs[i] = {};
 	    var temp = clone(cens[i]);
 	    for(key in temp){
+		if(key != "magnitude"){
 		temp[key + "_weights"] = {};
 		var max = 0;
 		for(r =0; r < dimens[key]["distincts"].length; r++){
@@ -206,6 +207,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 		    }
 		}
 		temp[key + "_weights"]["max"] = max;
+		}
 	    }
 	    temp["&&res&&"] = i ;
 	    centroids.push(temp);
@@ -213,7 +215,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 
         for(i = 0; i < dataset.length; i++){
 	    var near = nearest(centroids,dataset[i],dimens, weights);
-	    centroids = update(centroids,dataset[i], near);
+	    centroids = update(centroids,dataset[i], near,dimens);
 
         }				   
 	
@@ -229,7 +231,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 
     return this.kmeans(k, weights, res);
 
-    function update(centroids, test, closest){
+    function update(centroids, test, closest,dimens){
 	var result = [];
 	var norm = 0.0;
 	var statik = clone(closest);
@@ -238,7 +240,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	}
 	norm = Math.sqrt(norm);
 	for(var i =0; i < centroids.length; i++){
-	    var dist = 1 - euclidianDistance(statik, centroids[i], weights) / norm;  
+	    var dist = 1 - euclidianDistance(statik, centroids[i], weights,dimens) / norm;  
 	    if(dist > .65)
 		result.push( mid(test, centroids[i], dist  ));
 	    else
@@ -268,7 +270,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	var min = 1000000;
 	var result = null;
 	for(var i =0; i < centroids.length; i++){
-	    var dist = euclidianDistance(test, centroids[i], weights);
+	    var dist = euclidianDistance(test, centroids[i], weights,dimens);
 	    if(dist  < min){
 		result = centroids[i];
 		min = dist;
@@ -277,11 +279,11 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	
 	return result;
     }
-    function euclidianDistance(a,b,weights){
+    function euclidianDistance(a,b,weights,dimens){
 	sum = 0;
 	for(d in a){
 	    if(d != "&&res&&" && ! (d.indexOf("_weights") >- 1 )){
-		var diff = this.data.dimensions[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
+		var diff = dimens[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
 		sum += Math.pow(diff , 2);
 	    }
 	}
@@ -300,10 +302,11 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     height = height == null ? 550 : height;
     height = height - margin.top - margin.bottom;
 
+    var dimens = clone(this.data.dimensions);
     var color = d3.scale.category20b();
     for( i=0; i < 10;i++){
 	color(i);
-    }
+    } 
     var col = dimension.length % 20;
     var svg =  d3.select(tag).append("svg")
 	.attr("width", width + margin.left + margin.right)
@@ -312,33 +315,30 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	.append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    if (this.data.dimensions[dimension].space==="discrete"){
-    var dataset = [];
-    var raw = {};
-    for (i =0; i < this.data.dataset.length; i++){
-	var temp = this.data.dataset[i];
-	var val = temp[dimension];
-	raw[val] = val in raw ? raw[val]  : {"name": val, "frequency":0  }  ;
-	raw[val].frequency+=1;
-    }
-    for(v in raw){
-	dataset.push(raw[v]);
-    }
+    if (dimens[dimension].space==="discrete"){
+        var dataset = [];
+        var raw = {};
+        for (i =0; i < this.data.dataset.length; i++){
+	    var temp = clone(this.data.dataset[i]);
+	    var val = temp[dimension];
+	    raw[val] = val in raw ? raw[val]  : {"name": val, "frequency":0  }  ;
+	    raw[val].frequency+=1;
+        }
+        for(v in raw){
+	    dataset.push(raw[v]);
+        }
+        var x = d3.scale.ordinal()
+	    .rangeRoundBands([0, width], .1);
+        var y = d3.scale.linear()
+	    .range([height, 25]);
 
-    var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
+        var xAxis = d3.svg.axis()
+	    .scale(x)
+	    .orient("bottom");
 
-    var y = d3.scale.linear()
-    .range([height, 25]);
-
-    var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-
+	var yAxis = d3.svg.axis()
+	    .scale(y)
+	    .orient("left");
 
 	x.domain(dataset.map(function(d) { return d.name; }));
 	y.domain([0, d3.max(dataset, function(d) { return d.frequency; })]);
@@ -351,13 +351,13 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	    .attr("dy", ".71em")
             .attr("font-size", "20px")
             .attr("x", width/2)
-    .attr("y", 25) 
+	    .attr("y", 25) 
 	    .style("text-anchor", "middle")
 	    .text(dimension);
 
 
 	var bar = svg.selectAll(".bar")
-    .data(dataset).enter().append("g").attr("class", "bar");
+	    .data(dataset).enter().append("g").attr("class", "bar");
     
        bar.append("rect")
 	   .style("fill", color(col))
@@ -375,7 +375,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	    .attr("text-anchor", "middle")
 	    .text(function(d) { return d.frequency; });
     }
-    else if(this.data.dimensions[dimension].space==="continuous"){
+    else if(dimens[dimension].space==="continuous"){
 
 	var values = [];
 	for (i =0; i < this.data.dataset.length; i++){
@@ -441,7 +441,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 	    .attr("dy", ".71em")
             .attr("font-size", "20px")
             .attr("x", width/2)
-    .attr("y", 25) 
+	.attr("y", 25) 
 	    .style("text-anchor", "middle")
 	    .text(dimension);
 
@@ -459,7 +459,7 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 
     var dimens = clone(this.data.dimensions);
 
-    var dataset  = this.data.dataset;
+    var dataset  = cloneL(this.data.dataset);
 
     
     var x = d3.scale.linear()
@@ -486,11 +486,11 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-    if(this.data.dimensions[z_dim].space ==="continuous"){
+    if(dimens[z_dim].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][z_dim]);
+        for (i =0; i < dataset.length; i++){
+            values.push(dataset[i][z_dim]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -548,8 +548,9 @@ Fiddle.prototype.explore = function(dimens,tag, height, width, margin){
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
                 .style("fill", function(d) { return color(z_map(d[z_dim])); });
-    var colors = this.data.dimensions[z_dim] === "continuous" ? color.domain().sort(function(a,b) { return a - b;}) :color.domain().sort();
-	    var legend = svg.selectAll(".legend")
+    
+    var colors = dimens[z_dim] === "continuous" ? color.domain().sort(function(a,b) { return a - b;}) :color.domain().sort();
+    var legend = svg.selectAll(".legend")
                 .data(colors)
 		.enter().append("g")
 		.attr("class", "legend")
@@ -583,7 +584,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     height = height - margin.top - margin.bottom;
 
     var dimens = clone(this.data.dimensions);
-    var unmerged = this.data.dataset;
+    var unmerged = cloneL(this.data.dataset);
     var merged = {};
     var dataset = [];
     var hor = [];
@@ -592,11 +593,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     var y_map = null;
     var z_map = null;
 
-    if(this.data.dimensions[x].space ==="continuous"){
+    if(dimens[x].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][x]);
+        for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][x]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -609,11 +610,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     else{
         x_map = function(s){return s;};
     }
-    if(this.data.dimensions[y].space ==="continuous"){
+    if(dimens[y].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][y]);
+        for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][y]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -626,11 +627,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     else{
         y_map = function(s){return s;};
     }
-    if(this.data.dimensions[z].space ==="continuous"){
+    if(dimens[z].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][z]);
+        for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][z]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -665,14 +666,13 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     for (key in merged) {
 	dataset.push(merged[key]);
     }
-    console.log(dataset);
+
     var horizontal = hor.unique();
     var vertical = ver.unique();
-    console.log(horizontal);
 
 
-    horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();
-    vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();
+    horizontal = dimens[x].space === "continuous" || dimens[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();
+    vertical = dimens[y].space === "continuous" || dimens[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;
@@ -802,7 +802,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     height = height - margin.top - margin.bottom;
 
     var dimens = clone(this.data.dimensions);
-    var unmerged = this.data.dataset;
+    var unmerged = cloneL(this.data.dataset);
     var merged = {};
     var dataset = [];
     var hor = [];
@@ -810,11 +810,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     var x_map = null;
     var y_map = null;
     
-    if(this.data.dimensions[x].space ==="continuous"){
+    if(dimens[x].space ==="continuous"){
 
         var values = [];
-	for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][x]);
+	for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][x]);
 	}
 	var max = Math.max.apply(Math, values);
 	var min = Math.min.apply(Math, values);
@@ -827,11 +827,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     else{
 	x_map = function(s){return s;};
     }
-    if(this.data.dimensions[y].space ==="continuous"){
+    if(dimens[y].space ==="continuous"){
 
         var values = [];
-	for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][y]);
+	for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][y]);
 	}
 	var max = Math.max.apply(Math, values);
 	var min = Math.min.apply(Math, values);
@@ -862,14 +862,14 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 
     }
     for (key in merged) {
-    dataset.push(merged[key]);
+	dataset.push(merged[key]);
     }
-    console.log(this.data);
+
     var horizontal = hor.unique();
     var vertical = ver.unique();
     
-    horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
-    vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
+    horizontal = dimens[x].space === "continuous" || dimens[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
+    vertical = dimens[y].space === "continuous" || dimens[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;
@@ -880,7 +880,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
 
 
-    var label = function(val, dim){
+    var label = function(val, dim , dimens){
 
 	if(dimens[dim].type==="number"){
 	    if(dimens[dim].space ==="discrete"){
@@ -907,7 +907,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 	       var vert_axis = svg.selectAll(".vertical")
 		   .data(vertical)
 		   .enter().append("text")
-                   .html(function(d) { return label(d,y); })
+                   .html(function(d) { return label(d,y, dimens); })
 		   .attr("x", 0)
 		   .attr("y", function (d, i) { return i * gridSize; })
 		   .style("text-anchor", "end")
@@ -917,7 +917,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
 	       var hor_axis = svg.selectAll(".horizontal")
 		   .data(horizontal)
 		   .enter().append("text")
-                   .html(function(d) { return label(d,x); })
+                   .html(function(d) { return label(d,x,dimens); })
 		   .attr("x", function(d, i) { return i * gridSize; })
 		   .attr("y", 0)
 		   .style("text-anchor", "middle")
@@ -1002,7 +1002,7 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
     height = height - margin.top - margin.bottom;
 
 
-    var dataset  = this.data.dataset;
+    var dataset  = this.data.dataset.slice();
     var x = d3.scale.linear()
     .range([0, width]);
 
@@ -1244,7 +1244,17 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
 	    c[i] = p[i];
     } 
     return c; 
-} ;
+};
+
+cloneL = function(lst){
+    if(typeof lst[0] != "object")
+	return lst.slice()
+    var res = [];
+    for( i =0; i < lst.length; i++){
+	res.push(clone(lst[i]));
+    }
+    return res;
+};
 Array.prototype.average = function () {
     var sum = 0, j = 0; 
     for (var i = 0; i < this.length, isFinite(this[i]); i++) { 
@@ -1464,7 +1474,7 @@ Fiddle.prototype.save = function(tag){
     saveSvgAsPng(document.getElementById(tag), tag + ".png");
     svg.style("background-color", "");
 };Fiddle.prototype.kmeans = function(k, weights,dataset){
-    feats = !weights ? Object.keys(this.data.dimensions) : Object.keys(weights); 
+    feats = !weights ? Object.keys(clone(this.data.dimensions)) : Object.keys(weights); 
     weights = !weights ? {} : weights;
     k = !k ?  Math.ceil(Math.sqrt(feats.length / 2 )) : k;
 
@@ -1474,7 +1484,7 @@ Fiddle.prototype.save = function(tag){
 	weights[feats[i]] = !weights[feats[i]] ? 1 : weights[feats[i]] ;
     }
 
-    dataset = !dataset ? this.data.dataset : dataset;
+    dataset = !dataset ? cloneL(this.data.dataset) : dataset;
     for(dimen in dimens){
 	if(dimens[dimen]["space"] === "continuous" || dimens[dimen]["type"] ==="number"){
 	    var max = -200000000;
@@ -1502,7 +1512,7 @@ Fiddle.prototype.save = function(tag){
        } 
 
         for(i = 0; i < dataset.length; i++){
-	    var near = nearest(centroids,dataset[i],dimens, weights);
+	    var near = nearest(centroids,dataset[i],dimens, weights,dimens);
 	    if(near){
 	    for(key in dataset[i]){
 	        avgs[near["&&res&&"]][key] = avgs[near["&&res&&"]][key] != null ? avgs[near["&&res&&"]][key] : [];
@@ -1511,18 +1521,19 @@ Fiddle.prototype.save = function(tag){
 	    }
         }				   
 	        
-        cens = average(avgs);
+        cens = average(avgs, dimens);
 	res = cens;
 	avgs = [];
     }
     return cens;
-    function average(avgs){
+
+    function average(avgs, dimens){
 	var result = [];
 	for(i =0 ; i<avgs.length; i++){
 	    var temp = {};
 	    for(key in avgs[i]){
 		if(key != "&&res&&"){
-		    temp[key] = this.data.dimensions[key]["space"] === "continuous" || this.data.dimensions[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
+		    temp[key] = dimens[key]["space"] === "continuous" || dimens[key]["type"] ==="number" ?  avgs[i][key].average() : avgs[i][key].mode()  ; 
 		}
 	    }
 	    result.push(temp);
@@ -1530,11 +1541,11 @@ Fiddle.prototype.save = function(tag){
 	return result;
     }
 
-    function nearest(centroids, test, dimens,weights){
+    function nearest(centroids, test, dimensions,weights,dimens){
 	var min = 1000000;
 	var result = null;
 	for(var i =0; i < centroids.length; i++){
-	    var dist = euclidianDistance(test, centroids[i], weights);
+	    var dist = euclidianDistance(test, centroids[i], weights,dimens);
 	    if(dist  < min){
 		result = centroids[i];
 		min = dist;
@@ -1542,27 +1553,29 @@ Fiddle.prototype.save = function(tag){
 	}
 	return result;
     }
-    function euclidianDistance(a,b,weights){
+    function euclidianDistance(a,b,weights,dimens){
 	sum = 0;
 	for(d in a){
 	    if(d != "&&res&&"){
-		var diff = this.data.dimensions[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
+		console.log(d);
+		var diff = dimens[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
 		sum += Math.pow(diff , 2);
 	    }
 	}
+
 	return Math.sqrt(sum);
     }
 
 
 };Fiddle.prototype.logisticRegression = function(dimens, criteria){
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
 
     var maps = {};
 
     var alpha = .05;
     var beta = {};
     var features = {};
-    for (i =0; i < this.data.dataset.length; i++){
+    for (i =0; i < dataset.length; i++){
 	  for(j=0; j< dimens.length; j++){
 	      if(dimens[j] in maps){
 		  maps[dimens[j]]["values"].push(dataset[i][dimens[j]]);
@@ -1782,7 +1795,7 @@ Fiddle.prototype.save = function(tag){
     }
 
 };Fiddle.prototype.naiveBayes = function(dimens, criteria, alpha, beta){
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
 
     var maps = {};
     var probs = {};
@@ -1791,7 +1804,8 @@ Fiddle.prototype.save = function(tag){
     probs["total"] = {};
     var alpha = .05;
     var beta = .1;
-    for (i =0; i < this.data.dataset.length; i++){
+
+    for (i =0; i < dataset.length; i++){
 	  for(j=0; j< dimens.length; j++){
 	      if(dimens[j] in maps){
 		  maps[dimens[j]]["values"].push(dataset[i][dimens[j]]);
@@ -1995,7 +2009,9 @@ Fiddle.prototype.save = function(tag){
 
     }
 };Fiddle.prototype.parallel = function (tag, h, w, m){
-    var unmerged = this.data.dataset;
+
+    var dimens = clone(this.data.dimensions);
+    var unmerged = cloneL(this.data.dataset);
     var merged = {};
     var dataset = [];
     for (i = 0; i < unmerged.length; i++) {
@@ -2023,14 +2039,15 @@ Fiddle.prototype.save = function(tag){
     for( i=0; i < 10;i++){
         color(i);
     }
+   
     var c = '';
-    for( i = 0; i< this.data.dimensions.length; i++){
-        c = c + this.data.dimensions[i];
-    }
+    for( i = 0; i< dimens.length; i++){
+        c = c + dimens[i];
+	}
     var col = c.length % 20;
 
 
-var dimens = this.data.dimensions;
+
     for (i in dimens) { 
 	if(dimens[i].type ==="string"){
 	    dimens[i]["scale"] = d3.scale.ordinal().rangePoints([0, h]);
@@ -2040,11 +2057,11 @@ var dimens = this.data.dimensions;
 	}
 
     }
-var x = d3.scale.ordinal().rangePoints([0, w], 1),
+    var x = d3.scale.ordinal().rangePoints([0, w], 1),
     y = {},
     dragging = {};
 
-var line = d3.svg.line(),
+    var line = d3.svg.line(),
     axis = d3.svg.axis().orient("left"),
     background,
     foreground;
@@ -2201,7 +2218,7 @@ Fiddle.prototype.stat = function(dimen){
 	return d;
     };
 
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
     var dimension = this.data.dimensions[dimen];
     var space = dimension.space;
     var type = dimension.type;
@@ -2243,7 +2260,7 @@ Fiddle.prototype.stat = function(dimen){
 	}
     }
     result = {};
-    result.distinct = vals.unique().length *1.0 / vals.length;
+    result.distinct = vals.unique().length;
     result.mode = type==="time"  ? epoch(mode) : mode;
     result.type = type;
     result.count = vals.length;
@@ -2262,7 +2279,7 @@ Fiddle.prototype.stat = function(dimen){
 Fiddle.prototype.linearRegression = function(a,b){
     if(this.data.dimensions[a].space != "continuous" || this.data.dimensions[b].space !="continuous")
 	return null;
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
     var x = 0.0;
     var x_list = [];
     var y = 0.0;
@@ -2296,7 +2313,7 @@ Fiddle.prototype.linearRegression = function(a,b){
 };
 Fiddle.prototype.correlation = function(a,b){
 
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
     var sxy  = 0.0;
 
     var x = 0.0;
@@ -2331,7 +2348,7 @@ Fiddle.prototype.correlation = function(a,b){
     width = 960 - margin.left - margin.right;
     height = 500 - margin.top - margin.bottom;
     
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
 
     var x = d3.time.scale()
     .range([0, width]);
@@ -2361,13 +2378,13 @@ Fiddle.prototype.correlation = function(a,b){
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== x_dim; }));
+    color.domain(d3.keys(dataset[0]).filter(function(key) { return key !== x_dim; }));
 
-	    dataset.forEach(function(d) {
-		    var date = new Date(0); // The 0 there is the key, which sets the date to the epoch
-		    date.setUTCSeconds(d[x_dim]);
-		    d.date = date;
-		});
+    dataset.forEach(function(d) {
+	   var date = new Date(0); // The 0 there is the key, which sets the date to the epoch
+	   date.setUTCSeconds(d[x_dim]);
+	   d.date = date;
+    });
 
     var dimens = color.domain().map(function(name) {
 		    if(trends.indexOf(name) > -1){
@@ -2377,7 +2394,7 @@ Fiddle.prototype.correlation = function(a,b){
 				return {date: d.date, value: +d[name]};
 			    })
 		    };}
-		});
+    });
     dimens  = dimens.filter(function(n){ return n != undefined }); 
 	    x.domain(d3.extent(dataset, function(d) { return d.date; }));
 	    y.domain([

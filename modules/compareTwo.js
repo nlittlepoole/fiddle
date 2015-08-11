@@ -10,7 +10,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     height = height - margin.top - margin.bottom;
 
     var dimens = clone(this.data.dimensions);
-    var unmerged = this.data.dataset;
+    var unmerged = cloneL(this.data.dataset);
     var merged = {};
     var dataset = [];
     var hor = [];
@@ -18,11 +18,11 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     var x_map = null;
     var y_map = null;
     
-    if(this.data.dimensions[x].space ==="continuous"){
+    if(dimens[x].space ==="continuous"){
 
         var values = [];
-	for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][x]);
+	for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][x]);
 	}
 	var max = Math.max.apply(Math, values);
 	var min = Math.min.apply(Math, values);
@@ -35,11 +35,11 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     else{
 	x_map = function(s){return s;};
     }
-    if(this.data.dimensions[y].space ==="continuous"){
+    if(dimens[y].space ==="continuous"){
 
         var values = [];
-	for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][y]);
+	for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][y]);
 	}
 	var max = Math.max.apply(Math, values);
 	var min = Math.min.apply(Math, values);
@@ -70,14 +70,14 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 
     }
     for (key in merged) {
-    dataset.push(merged[key]);
+	dataset.push(merged[key]);
     }
-    console.log(this.data);
+
     var horizontal = hor.unique();
     var vertical = ver.unique();
     
-    horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
-    vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
+    horizontal = dimens[x].space === "continuous" || dimens[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();   
+    vertical = dimens[y].space === "continuous" || dimens[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();   
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;
@@ -88,7 +88,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
     var colors = ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]; // alternatively colorbrewer.YlGnBu[9]
 
 
-    var label = function(val, dim){
+    var label = function(val, dim , dimens){
 
 	if(dimens[dim].type==="number"){
 	    if(dimens[dim].space ==="discrete"){
@@ -115,7 +115,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	       var vert_axis = svg.selectAll(".vertical")
 		   .data(vertical)
 		   .enter().append("text")
-                   .html(function(d) { return label(d,y); })
+                   .html(function(d) { return label(d,y, dimens); })
 		   .attr("x", 0)
 		   .attr("y", function (d, i) { return i * gridSize; })
 		   .style("text-anchor", "end")
@@ -125,7 +125,7 @@ Fiddle.prototype.heatmap = function(x,y,tag, height, width, margin){
 	       var hor_axis = svg.selectAll(".horizontal")
 		   .data(horizontal)
 		   .enter().append("text")
-                   .html(function(d) { return label(d,x); })
+                   .html(function(d) { return label(d,x,dimens); })
 		   .attr("x", function(d, i) { return i * gridSize; })
 		   .attr("y", 0)
 		   .style("text-anchor", "middle")
@@ -210,7 +210,7 @@ Fiddle.prototype.scatterplot = function(x_dim,y_dim, tag, height, width, margin)
     height = height - margin.top - margin.bottom;
 
 
-    var dataset  = this.data.dataset;
+    var dataset  = this.data.dataset.slice();
     var x = d3.scale.linear()
     .range([0, width]);
 

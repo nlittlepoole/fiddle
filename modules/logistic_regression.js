@@ -1,12 +1,12 @@
 Fiddle.prototype.logisticRegression = function(dimens, criteria){
-    var dataset = this.data.dataset;
+    var dataset = this.data.dataset.slice();
 
     var maps = {};
 
     var alpha = .05;
     var beta = {};
     var features = {};
-    for (i =0; i < this.data.dataset.length; i++){
+    for (i =0; i < dataset.length; i++){
 	  for(j=0; j< dimens.length; j++){
 	      if(dimens[j] in maps){
 		  maps[dimens[j]]["values"].push(dataset[i][dimens[j]]);

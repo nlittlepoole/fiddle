@@ -8,7 +8,17 @@ clone = function (p,c) {
 	    c[i] = p[i];
     } 
     return c; 
-} ;
+};
+
+cloneL = function(lst){
+    if(typeof lst[0] != "object")
+	return lst.slice()
+    var res = [];
+    for( i =0; i < lst.length; i++){
+	res.push(clone(lst[i]));
+    }
+    return res;
+};
 Array.prototype.average = function () {
     var sum = 0, j = 0; 
     for (var i = 0; i < this.length, isFinite(this[i]); i++) { 

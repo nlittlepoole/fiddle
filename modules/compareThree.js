@@ -9,7 +9,7 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
 
     var dimens = clone(this.data.dimensions);
 
-    var dataset  = this.data.dataset;
+    var dataset  = cloneL(this.data.dataset);
 
     
     var x = d3.scale.linear()
@@ -36,11 +36,11 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-    if(this.data.dimensions[z_dim].space ==="continuous"){
+    if(dimens[z_dim].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][z_dim]);
+        for (i =0; i < dataset.length; i++){
+            values.push(dataset[i][z_dim]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -98,8 +98,9 @@ Fiddle.prototype.scatterplot3D = function(x_dim,y_dim,z_dim, tag, height, width,
 		.attr("cx", function(d) { return x(d[x_dim]); })
 		.attr("cy", function(d) { return y(d[y_dim]); })
                 .style("fill", function(d) { return color(z_map(d[z_dim])); });
-    var colors = this.data.dimensions[z_dim] === "continuous" ? color.domain().sort(function(a,b) { return a - b;}) :color.domain().sort();
-	    var legend = svg.selectAll(".legend")
+    
+    var colors = dimens[z_dim] === "continuous" ? color.domain().sort(function(a,b) { return a - b;}) :color.domain().sort();
+    var legend = svg.selectAll(".legend")
                 .data(colors)
 		.enter().append("g")
 		.attr("class", "legend")
@@ -133,7 +134,7 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     height = height - margin.top - margin.bottom;
 
     var dimens = clone(this.data.dimensions);
-    var unmerged = this.data.dataset;
+    var unmerged = cloneL(this.data.dataset);
     var merged = {};
     var dataset = [];
     var hor = [];
@@ -142,11 +143,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     var y_map = null;
     var z_map = null;
 
-    if(this.data.dimensions[x].space ==="continuous"){
+    if(dimens[x].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][x]);
+        for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][x]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -159,11 +160,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     else{
         x_map = function(s){return s;};
     }
-    if(this.data.dimensions[y].space ==="continuous"){
+    if(dimens[y].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][y]);
+        for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][y]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -176,11 +177,11 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     else{
         y_map = function(s){return s;};
     }
-    if(this.data.dimensions[z].space ==="continuous"){
+    if(dimens[z].space ==="continuous"){
 
         var values = [];
-        for (i =0; i < this.data.dataset.length; i++){
-            values.push(this.data.dataset[i][z]);
+        for (i =0; i < unmerged.length; i++){
+            values.push(unmerged[i][z]);
         }
         var max = Math.max.apply(Math, values);
         var min = Math.min.apply(Math, values);
@@ -215,14 +216,13 @@ Fiddle.prototype.heatmap3D = function(x,y, z,tag, height, width, margin){
     for (key in merged) {
 	dataset.push(merged[key]);
     }
-    console.log(dataset);
+
     var horizontal = hor.unique();
     var vertical = ver.unique();
-    console.log(horizontal);
 
 
-    horizontal = this.data.dimensions[x].space === "continuous" || this.data.dimensions[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();
-    vertical = this.data.dimensions[y].space === "continuous" || this.data.dimensions[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();
+    horizontal = dimens[x].space === "continuous" || dimens[x].type=="time" ? horizontal.sort(function(a,b) { return a - b;}): horizontal.sort();
+    vertical = dimens[y].space === "continuous" || dimens[y].type=="time" ? vertical.sort(function(a,b) { return a - b;}): vertical.sort();
     var gridSize = 76;//Math.floor(width / horizontal.length);
     var buckets = 9; //denotes heat scale
     var legendElementWidth = width / buckets ;

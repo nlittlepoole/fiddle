@@ -1,5 +1,7 @@
 Fiddle.prototype.parallel = function (tag, h, w, m){
-    var unmerged = this.data.dataset;
+
+    var dimens = clone(this.data.dimensions);
+    var unmerged = cloneL(this.data.dataset);
     var merged = {};
     var dataset = [];
     for (i = 0; i < unmerged.length; i++) {
@@ -27,14 +29,15 @@ Fiddle.prototype.parallel = function (tag, h, w, m){
     for( i=0; i < 10;i++){
         color(i);
     }
+   
     var c = '';
-    for( i = 0; i< this.data.dimensions.length; i++){
-        c = c + this.data.dimensions[i];
-    }
+    for( i = 0; i< dimens.length; i++){
+        c = c + dimens[i];
+	}
     var col = c.length % 20;
 
 
-var dimens = this.data.dimensions;
+
     for (i in dimens) { 
 	if(dimens[i].type ==="string"){
 	    dimens[i]["scale"] = d3.scale.ordinal().rangePoints([0, h]);
@@ -44,11 +47,11 @@ var dimens = this.data.dimensions;
 	}
 
     }
-var x = d3.scale.ordinal().rangePoints([0, w], 1),
+    var x = d3.scale.ordinal().rangePoints([0, w], 1),
     y = {},
     dragging = {};
 
-var line = d3.svg.line(),
+    var line = d3.svg.line(),
     axis = d3.svg.axis().orient("left"),
     background,
     foreground;
