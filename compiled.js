@@ -33,6 +33,7 @@ Fiddle.prototype.setPeriodContinuous = function(dimension,period){
 	else if(period.toLowerCase() ==="year")
 	    dataset[i][dimension] = time.getFullYear() + time.getMonth()/12.0 + ((time.getDate()/7) + 1)/4.0/10.0 + time.getDay()/7.0/100.0;
     }
+
 }
 Fiddle.prototype.setPeriodDiscrete = function(dimension,period){
     var dataset = this.data.dataset;
@@ -67,8 +68,11 @@ Fiddle.prototype.clearFig = function(tag){
     delete this.figures[tag];
 };
 
-Fiddle.prototype.clear = function (){
+Fiddle.prototype.reset = function(){
     this.data = clone(this.master);
+};
+
+Fiddle.prototype.clear = function (){
     for(tag in this.figures){
 	d3.select(tag).html("");
     }
@@ -1557,7 +1561,6 @@ Fiddle.prototype.save = function(tag){
 	sum = 0;
 	for(d in a){
 	    if(d != "&&res&&"){
-		console.log(d);
 		var diff = dimens[d].type=="number" || dimens[d].space=="continuous" ? weights[d] * (a[d] - b[d])/dimens[d]["range"]  : (a[d]===b[d] ? 0 : 1 )   ;
 		sum += Math.pow(diff , 2);
 	    }
@@ -2012,6 +2015,7 @@ Fiddle.prototype.save = function(tag){
 
     var dimens = clone(this.data.dimensions);
     var unmerged = cloneL(this.data.dataset);
+    console.log(unmerged);
     var merged = {};
     var dataset = [];
     for (i = 0; i < unmerged.length; i++) {

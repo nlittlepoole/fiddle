@@ -33,6 +33,7 @@ Fiddle.prototype.setPeriodContinuous = function(dimension,period){
 	else if(period.toLowerCase() ==="year")
 	    dataset[i][dimension] = time.getFullYear() + time.getMonth()/12.0 + ((time.getDate()/7) + 1)/4.0/10.0 + time.getDay()/7.0/100.0;
     }
+
 }
 Fiddle.prototype.setPeriodDiscrete = function(dimension,period){
     var dataset = this.data.dataset;
@@ -67,8 +68,11 @@ Fiddle.prototype.clearFig = function(tag){
     delete this.figures[tag];
 };
 
-Fiddle.prototype.clear = function (){
+Fiddle.prototype.reset = function(){
     this.data = clone(this.master);
+};
+
+Fiddle.prototype.clear = function (){
     for(tag in this.figures){
 	d3.select(tag).html("");
     }
