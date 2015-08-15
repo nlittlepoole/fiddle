@@ -7,8 +7,9 @@ Fiddle.js is a javascript data sandbox so that you can fiddle with your data and
   - Pick any combination of dimensions to get dynamic visualizations providing easy insights (Complete)
   - Evaluate statistics on any field (complete)
   - Utilize correlation tests on pairs of fields (complete)
+  - Let Fiddle auto cluster and predict based on your data (Complete)
   - Basic linear projection (ARIMA coming soon)
-  - Let Fiddle auto cluster and predict based on your data (In Progress)
+ 
 
 
 > It's difficult to imagine the power that you're going to have when so many
@@ -17,10 +18,10 @@ Fiddle.js is a javascript data sandbox so that you can fiddle with your data and
 Fiddle is built to be easily deployable and useful for creating dashboards useable by non technical and non data scientist indivduals. With Fiddle it becomes easier to abstract away common data science tasks like Machine Learning, Statistics, and visualization.  Anyone should be able to leverage the power of the data in front of them. 
 
 ### Demo:
-Play around with a [demo] app I made called [Twiddle] built on top of Fiddle.js
+Play around with a [demo] app I made called [Twiddle] built on top of Fiddle.js or test out the webservice built on top called [Fiddlr]
 
 ### Version
-0.5.0
+0.9.0
 
 ### Tech
 
@@ -96,7 +97,8 @@ Feel free to make a pull request to this repository. This project is being built
 
   - Write Tests
   - Bug Fixes
-  - Implement Machine Learning
+  - Support Vector Machines
+  - More Neural Networks
 
 ### Maintainers:
 [Niger Little-Poole]
@@ -113,3 +115,4 @@ MIT
 [release]: https://github.com/nlittlepoole/fiddle/releases
 [demo]: http://nlittlepoole.github.io/fiddle/
 [Twiddle]: http://nlittlepoole.github.io/fiddle/
+[Fiddle]: http://fiddle.io
