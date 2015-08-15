@@ -1,5 +1,5 @@
 Fiddle.prototype.logisticRegression = function(dimens, criteria){
-    var dataset = this.data.dataset.slice();
+    var dataset = cloneL(this.data.dataset);
 
     var maps = {};
 
@@ -18,14 +18,13 @@ Fiddle.prototype.logisticRegression = function(dimens, criteria){
 	  }
     }
 
-    for(i=0; i< dimens.length; i++){
-
-	var values = maps[dimens[i]]["values"];
-	if(this.data.dimensions[dimens[i]].space ==="continuous"){
-	    maps[dimens[i]]["map"] = generateMap(values);
+    for(j=0; j< dimens.length; j++){
+	var values = maps[dimens[j]]["values"];
+	if(this.data.dimensions[dimens[j]].space ==="continuous"){
+	    maps[dimens[j]]["map"] = generateMap(values);
 	}
 	else{
-	    maps[dimens[i]]["map"] = function(s){return s;};
+	    maps[dimens[j]]["map"] = function(s){return s;};
 	}
 
     }

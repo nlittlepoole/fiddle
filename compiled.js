@@ -1571,7 +1571,7 @@ Fiddle.prototype.save = function(tag){
 
 
 };Fiddle.prototype.logisticRegression = function(dimens, criteria){
-    var dataset = this.data.dataset.slice();
+    var dataset = cloneL(this.data.dataset);
 
     var maps = {};
 
@@ -1590,14 +1590,13 @@ Fiddle.prototype.save = function(tag){
 	  }
     }
 
-    for(i=0; i< dimens.length; i++){
-
-	var values = maps[dimens[i]]["values"];
-	if(this.data.dimensions[dimens[i]].space ==="continuous"){
-	    maps[dimens[i]]["map"] = generateMap(values);
+    for(j=0; j< dimens.length; j++){
+	var values = maps[dimens[j]]["values"];
+	if(this.data.dimensions[dimens[j]].space ==="continuous"){
+	    maps[dimens[j]]["map"] = generateMap(values);
 	}
 	else{
-	    maps[dimens[i]]["map"] = function(s){return s;};
+	    maps[dimens[j]]["map"] = function(s){return s;};
 	}
 
     }
@@ -2015,7 +2014,6 @@ Fiddle.prototype.save = function(tag){
 
     var dimens = clone(this.data.dimensions);
     var unmerged = cloneL(this.data.dataset);
-    console.log(unmerged);
     var merged = {};
     var dataset = [];
     for (i = 0; i < unmerged.length; i++) {
